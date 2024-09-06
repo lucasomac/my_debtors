@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Lucas Macedo",
+    "invoices": {
+      "datePayment": "09/08/2024",
+      "typePayment": "C",
+      "description": "Celular",
+      "value": 156.36
+    }
+  },
+  {
+    "name": "Lucas Macedo",
+    "invoices": {
+      "datePayment": "29/08/2024",
+      "typePayment": "D",
+      "description": "Celular",
+      "value": 156.36
+    }
+  },
+  {
+    "name": "Mateus Macedo",
+    "invoices": {
+      "datePayment": "13/08/2024",
+      "typePayment": "C",
+      "description": "Celular",
+      "value": 999.9
+    }
+  },
+  {
+    "name": "Mateus Macedo",
+    "invoices": {
+      "datePayment": "10/09/2024",
+      "typePayment": "D",
+      "description": "Celular",
+      "value": 333
+    }
+  }
+]
