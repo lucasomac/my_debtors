@@ -64,10 +64,10 @@ class _DebtorsPageState extends State<DebtorsPage> {
         debtor.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle:
-          Text("Creditos: ${countByType(debtor.invoices?.cast<Invoice>(), "C")}"
-              " | "
-              "Debitos: ${countByType(debtor.invoices?.cast<Invoice>(), "D")}"),
+      // subtitle:
+      //     Text("Creditos: ${countByType(debtor.invoices?.cast<Invoice>(), "C")}"
+      //         " | "
+      //         "Debitos: ${countByType(debtor.invoices?.cast<Invoice>(), "D")}"),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return DebtorPage(

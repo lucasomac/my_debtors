@@ -17,23 +17,23 @@ class _DebtorPageState extends State<DebtorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.debtor.name)),
-      body: _buildInvoices(),
+      body: Placeholder(),
     );
   }
 
-  _buildInvoices() {
-    var invoices = widget.debtor.invoices;
-    if (invoices != null) {
+  _buildDebtors() {
+    // var invoices = widget.debtor.invoices;
+    // if (invoices != null) {
       return ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: widget.debtor.invoices?.length,
+        // itemCount: widget.debtor.invoices?.length,
         itemBuilder: (context, index) {
-          return _buildDebtorRow(widget.debtor.invoices?[index] as Invoice);
+          // return _buildDebtorRow(widget.debtor.invoices?[index] as Invoice);
         },
       );
-    } else {
-      return const Center(child: Text("Nao foram encontradas transacoes"));
-    }
+    // } else {
+    //   return const Center(child: Text("Nao foram encontradas transacoes"));
+    // }
   }
 
   _buildDebtorRow(Invoice invoice) {
