@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Invoice.dart';
 import 'package:my_debtors/screens/register_debtor_page.dart';
 
+import '../mocks/debtors_list.dart';
 import '../model/Debtor.dart';
 import 'debtor_page.dart';
 
@@ -13,12 +14,6 @@ class DebtorsPage extends StatefulWidget {
 }
 
 class _DebtorsPageState extends State<DebtorsPage> {
-  final _debtors = [
-    Debtor(name: "Lucas"),
-    Debtor(name: "Mateus"),
-    Debtor(name: "Ariane")
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +38,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
     );
     if (result is Debtor) {
       setState(() {
-        _debtors.add(result);
+        debtors.add(result);
       });
     }
   }
@@ -51,9 +46,9 @@ class _DebtorsPageState extends State<DebtorsPage> {
   _buildDebtors() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: _debtors.length,
+      itemCount: debtors.length,
       itemBuilder: (context, index) {
-        return _buildDebtorRow(_debtors[index]);
+        return _buildDebtorRow(debtors[index]);
       },
     );
   }
@@ -88,7 +83,7 @@ int countByType(List<Invoice>? invoices, String type) {
 snackshow(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(text),
-    duration: Duration(seconds: 2),
+    duration: const Duration(seconds: 2),
     width: 180,
     behavior: SnackBarBehavior.floating,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

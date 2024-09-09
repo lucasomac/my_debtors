@@ -7,7 +7,7 @@ class Invoice {
   late num _value;
   late Debtor _debtor;
 
-  Invoice(this._debtor,
+  Invoice(
       {required String datePayment,
       required String typePayment,
       required String description,
@@ -17,6 +17,7 @@ class Invoice {
     _typePayment = typePayment;
     _description = description;
     _value = value;
+    _debtor = debtor;
   }
 
   Invoice.fromJson(dynamic json) {
@@ -34,6 +35,8 @@ class Invoice {
   String get description => _description;
 
   num get value => _value;
+
+  Debtor get debtor => _debtor;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:my_debtors/model/Debtor.dart';
 
+import '../model/Debtor.dart';
 import '../model/Invoice.dart';
+import '../mocks/invoices_list.dart';
 
 class DebtorPage extends StatefulWidget {
   final Debtor debtor;
@@ -17,23 +18,25 @@ class _DebtorPageState extends State<DebtorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.debtor.name)),
-      body: Placeholder(),
+      body: _buildDebtors(),
     );
   }
 
   _buildDebtors() {
-    // var invoices = widget.debtor.invoices;
-    // if (invoices != null) {
+    var filteredList = invoices
+        .where((invoice) => invoice.debtor.name == widget.debtor.name)
+        .toList();
+    if (filteredList.isNotEmpty) {
       return ListView.builder(
         padding: const EdgeInsets.all(16),
-        // itemCount: widget.debtor.invoices?.length,
+        itemCount: filteredList.length,
         itemBuilder: (context, index) {
-          // return _buildDebtorRow(widget.debtor.invoices?[index] as Invoice);
+          return _buildDebtorRow(filteredList[index]);
         },
       );
-    // } else {
-    //   return const Center(child: Text("Nao foram encontradas transacoes"));
-    // }
+    } else {
+      return const Center(child: Text("Nao foram encontradas transacoes"));
+    }
   }
 
   _buildDebtorRow(Invoice invoice) {
