@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Invoice.dart';
+import 'package:my_debtors/screens/register_debtor_page.dart';
 
 import '../model/Debtor.dart';
+import 'debtor_page.dart';
 
 class DebtorsPage extends StatefulWidget {
   const DebtorsPage({super.key});
@@ -20,9 +22,30 @@ class _DebtorsPageState extends State<DebtorsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Debtors')),
-      body: _buildDebtors(),
+        appBar: AppBar(title: const Text('Debtors')),
+        body: _buildDebtors(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _goToRegister(context);
+          },
+          child: Icon(Icons.add),
+        ));
+  }
+
+  _goToRegister(BuildContext context) async {
+    var result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return RegisterDebtorPage();
+        },
+      ),
     );
+    if (result is Debtor) {
+      setState(() {
+        _debtors.add(result);
+      });
+    }
   }
 
   _buildDebtors() {
@@ -46,13 +69,11 @@ class _DebtorsPageState extends State<DebtorsPage> {
               " | "
               "Debitos: ${countByType(debtor.invoices?.cast<Invoice>(), "D")}"),
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(debtor.name),
-          duration: Duration(seconds: 2),
-          width: 180,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ));
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return DebtorPage(
+            debtor: debtor,
+          );
+        }));
       },
     );
   }
@@ -62,4 +83,14 @@ int countByType(List<Invoice>? invoices, String type) {
   return invoices != null
       ? invoices.where((invoice) => invoice.typePayment == type).length
       : 0;
+}
+
+snackshow(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(text),
+    duration: Duration(seconds: 2),
+    width: 180,
+    behavior: SnackBarBehavior.floating,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  ));
 }
