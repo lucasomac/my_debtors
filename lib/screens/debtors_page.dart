@@ -23,7 +23,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
           onPressed: () {
             _goToRegister(context);
           },
-          child: Icon(Icons.add),
+          child: const Icon(Icons.add),
         ));
   }
 
@@ -32,13 +32,14 @@ class _DebtorsPageState extends State<DebtorsPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return RegisterDebtorPage();
+          return const RegisterDebtorPage();
         },
       ),
     );
     if (result is Debtor) {
       setState(() {
         debtors.add(result);
+        _successAddDebtor(result.name);
       });
     }
   }
@@ -72,20 +73,20 @@ class _DebtorsPageState extends State<DebtorsPage> {
       },
     );
   }
+
+  _successAddDebtor(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("$text adicionado com sucesso!"),
+      duration: const Duration(seconds: 2),
+      width: 180,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ));
+  }
 }
 
 int countByType(List<Invoice>? invoices, String type) {
   return invoices != null
       ? invoices.where((invoice) => invoice.typePayment == type).length
       : 0;
-}
-
-snackshow(BuildContext context, String text) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(text),
-    duration: const Duration(seconds: 2),
-    width: 180,
-    behavior: SnackBarBehavior.floating,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-  ));
 }

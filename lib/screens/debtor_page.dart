@@ -40,13 +40,21 @@ class _DebtorPageState extends State<DebtorPage> {
   }
 
   _buildDebtorRow(Invoice invoice) {
-    return ListTile(
-      title: Text(
-        invoice.description,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+    return Card(
+      elevation: 8,
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        tileColor:
+            invoice.typePayment == "C" ? Colors.redAccent : Colors.greenAccent,
+        title: Text(
+          invoice.description,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text("R\$ ${invoice.value} - ${invoice.datePayment}"),
+        onTap: () {},
       ),
-      subtitle: Text("R\$ ${invoice.value} - ${invoice.datePayment}"),
-      onTap: () {},
     );
   }
 }
