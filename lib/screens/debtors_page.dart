@@ -35,13 +35,12 @@ class _DebtorsPageState extends State<DebtorsPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return const RegisterDebtorPage();
+          return RegisterDebtorPage();
         },
       ),
     );
     if (result is Debtor) {
       setState(() {
-        debtors.add(result);
         _successAddDebtor(result.name);
       });
     }

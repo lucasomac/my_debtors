@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Debtor.dart';
 
+import '../util/db_helper.dart';
+
 class RegisterDebtorPage extends StatefulWidget {
-  const RegisterDebtorPage({super.key});
+  DbHelper helper = DbHelper();
+
+  RegisterDebtorPage({super.key});
 
   @override
   State<RegisterDebtorPage> createState() => _RegisterDebtorPageState();
@@ -56,9 +60,11 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
     );
   }
 
-  void _saveDebtorAndGoBack(BuildContext context) {
+  _saveDebtorAndGoBack(BuildContext context) {
     var debtorToSave =
         Debtor(null, name: nameController.text, city: cityController.text);
+    var id = widget.helper.insertDebtor(debtorToSave);
+    id.then((value) => debugPrint(value.toString()));
     Navigator.pop(context, debtorToSave);
   }
 }
