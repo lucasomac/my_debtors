@@ -24,7 +24,7 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _buildDebtors() {
     var filteredList = invoices
-        .where((invoice) => invoice.debtor.name == widget.debtor.name)
+        .where((invoice) => invoice.debtor == widget.debtor.id)
         .toList();
     if (filteredList.isNotEmpty) {
       return ListView.builder(
