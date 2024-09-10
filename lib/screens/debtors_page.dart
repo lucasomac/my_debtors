@@ -4,10 +4,13 @@ import 'package:my_debtors/screens/register_debtor_page.dart';
 
 import '../mocks/debtors_list.dart';
 import '../model/Debtor.dart';
+import '../util/db_helper.dart';
 import 'debtor_page.dart';
 
 class DebtorsPage extends StatefulWidget {
-  const DebtorsPage({super.key});
+  DebtorsPage({super.key});
+
+  DbHelper helper = DbHelper();
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();
@@ -18,7 +21,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Debtors')),
-        body: _buildDebtors(),
+        body: _getDebtorsFromDatabase(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _goToRegister(context);
@@ -44,7 +47,23 @@ class _DebtorsPageState extends State<DebtorsPage> {
     }
   }
 
-  _buildDebtors() {
+  _getDebtorsFromDatabase() {
+    return FutureBuilder<List>(
+        future: widget.helper.getAllDebtors(),
+        builder: (context, future) {
+          if (!future.hasData) {
+            return const Center(
+                child: Text("There are no debtors registered!"));
+          } else {
+            var list = future.data!.toList().map((element) {
+              return Debtor.fromJson(element);
+            });
+            return _buildDebtors(list.toList());
+          }
+        });
+  }
+
+  _buildDebtors(List<Debtor> debtors) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: debtors.length,
@@ -60,10 +79,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
         debtor.name,
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      // subtitle:
-      //     Text("Creditos: ${countByType(debtor.invoices?.cast<Invoice>(), "C")}"
-      //         " | "
-      //         "Debitos: ${countByType(debtor.invoices?.cast<Invoice>(), "D")}"),
+      subtitle: Text(debtor.city),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return DebtorPage(

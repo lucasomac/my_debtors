@@ -17,7 +17,7 @@ class Debtor {
   Debtor.fromJson(dynamic json) {
     _id = json['id'];
     _name = json['name'];
-    _name = json['city'];
+    _city = json['city'];
   }
 
   int? get id => _id;
