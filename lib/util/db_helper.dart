@@ -18,9 +18,9 @@ class DbHelper {
   String columnInvoiceId = "id";
   String columnInvoiceDatePayment = "datePayment";
   String columnInvoiceTypePayment = "typePayment";
-  String columnInvoiceDescriptionPayment = "descriptionPayment";
-  String columnInvoiceValuePayment = "valuePayment";
-  String columnInvoiceVDebtor = "debtor";
+  String columnInvoiceDescriptionPayment = "description";
+  String columnInvoiceValuePayment = "value";
+  String columnInvoiceDebtor = "debtor";
 
   DbHelper._internal();
 
@@ -46,10 +46,10 @@ class DbHelper {
     await db.execute(
         "CREATE TABLE $tableDebtor ($columnDebtorId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtorName TEXT, $columnDebtorCity TEXT);");
     await db.execute("CREATE TABLE $tableInvoice ("
-        "$columnInvoiceId INTEGER PRIMARY KEY AUTOINCREMENT, $columnInvoiceDatePayment DATE, $columnInvoiceTypePayment TEXT,"
+        "$columnInvoiceId INTEGER PRIMARY KEY AUTOINCREMENT, $columnInvoiceDatePayment TEXT, $columnInvoiceTypePayment TEXT,"
         "$columnInvoiceDescriptionPayment TEXT, $columnInvoiceValuePayment DOUBLE,"
-        "$columnInvoiceVDebtor INTEGER, "
-        "FOREIGN KEY ($columnInvoiceVDebtor) REFERENCES $tableDebtor (id) ON DELETE CASCADE ON UPDATE CASCADE"
+        "$columnInvoiceDebtor INTEGER, "
+        "FOREIGN KEY ($columnInvoiceDebtor) REFERENCES $tableDebtor (id) ON DELETE CASCADE ON UPDATE CASCADE"
         ")");
   }
 
@@ -82,7 +82,7 @@ class DbHelper {
   Future<List> getAllInvoicesByDebtor(int debtorId) async {
     Database db = await this.db;
     var result = await db.query(tableInvoice,
-        where: "$columnInvoiceVDebtor = $debtorId");
+        where: "$columnInvoiceDebtor = $debtorId");
     return result;
   }
 
@@ -96,7 +96,7 @@ class DbHelper {
   Future<int> getCountInvoicesByDebtor(int debtorId) async {
     Database db = await this.db;
     var result = Sqflite.firstIntValue(await db.rawQuery(
-        "SELECT COUNT (*) FROM $tableInvoice WHERE $columnInvoiceVDebtor = $debtorId"));
+        "SELECT COUNT (*) FROM $tableInvoice WHERE $columnInvoiceDebtor = $debtorId"));
     return result!;
   }
 

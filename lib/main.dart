@@ -16,10 +16,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Instanciar o dbhelper:
     DbHelper helper = DbHelper();
-    // for (var debtor in debtors) {
-    //   Future id = helper.insertDebtor(debtor);
-    //   id.then( (value) => debugPrint(value.toString()) );
-    // }
+    for (var debtor in debtors) {
+      Future id = helper.insertDebtor(debtor);
+      id.then( (value) => debugPrint(value.toString()) );
+    }
     for (var invoice in invoices) {
       Future id = helper.insertInvoice(invoice );
       id.then((value) => debugPrint(value.toString()));

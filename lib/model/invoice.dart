@@ -1,13 +1,13 @@
 class Invoice {
   int? _id;
-  late DateTime _datePayment;
+  late String _datePayment;
   late String _typePayment;
   late String _description;
   late num _value;
   late int _debtor;
 
   Invoice(this._id,
-      {required DateTime datePayment,
+      {required String datePayment,
       required String typePayment,
       required String description,
       required num value,
@@ -30,7 +30,7 @@ class Invoice {
 
   int? get id => _id;
 
-  DateTime get datePayment => _datePayment;
+  String get datePayment => _datePayment;
 
   String get typePayment => _typePayment;
 
@@ -55,7 +55,7 @@ class Invoice {
     return map;
   }
 
-  set datePayment(DateTime value) {
+  set datePayment(String value) {
     _datePayment = value;
   }
 
