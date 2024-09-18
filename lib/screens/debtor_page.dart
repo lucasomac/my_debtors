@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_debtors/screens/register_invoice_page.dart';
 
 import '../model/Debtor.dart';
 import '../model/Invoice.dart';
@@ -19,11 +20,17 @@ class _DebtorPageState extends State<DebtorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.debtor.name)),
-      body: _getDebtorsFromDatabase(),
+      body: _getInvoicesFromDatabase(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _goToRegister(context);
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
-  _getDebtorsFromDatabase() {
+  _getInvoicesFromDatabase() {
     return FutureBuilder<List>(
         future: widget.helper.getAllInvoicesByDebtor(widget.debtor.id!),
         builder: (context, future) {
@@ -33,12 +40,36 @@ class _DebtorPageState extends State<DebtorPage> {
             });
             return _buildInvoices(list.toList());
           } else {
-            return Container(
-              child: const Center(
-                  child: Text("There are no invoices registered!")),
-            );
+            return const Center(
+                child: Text("There are no invoices registered!"));
           }
         });
+  }
+
+  _goToRegister(BuildContext context) async {
+    var result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return RegisterInvoicePage(widget.debtor);
+        },
+      ),
+    );
+    if (result is Invoice) {
+      setState(() {
+        _successAddInvoice(result.value.toString());
+      });
+    }
+  }
+
+  _successAddInvoice(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("$text foi contabilizado!"),
+      duration: const Duration(seconds: 2),
+      width: 180,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ));
   }
 
   _buildInvoices(List<Invoice> invoices) {

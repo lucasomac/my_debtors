@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Debtor.dart';
+import 'package:my_debtors/model/Invoice.dart';
+
+import '../util/db_helper.dart';
 
 class RegisterInvoicePage extends StatefulWidget {
   Debtor debtor;
+  DbHelper helper = DbHelper();
 
   RegisterInvoicePage(this.debtor, {super.key});
 
@@ -31,7 +35,6 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculador de Média: Tela de Digitação'),
@@ -70,8 +73,10 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
             ),
           ),
           ElevatedButton(
-            child: const Text('CALCULA'),
-            onPressed: () {},
+            child: const Text('SALVAR'),
+            onPressed: () {
+              _saveInvoiceAndGoBack(context);
+            },
           ),
           ElevatedButton(
             child: const Text('CANCELA'),
@@ -82,5 +87,17 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
         ],
       ),
     );
+  }
+
+  _saveInvoiceAndGoBack(BuildContext context) {
+    var invoiceToSave = Invoice(null,
+        datePayment: dateController.text,
+        typePayment: typeController.text,
+        description: descriptionController.text,
+        value: double.parse(valueController.text),
+        debtor: widget.debtor.id! );
+    var id = widget.helper.insertInvoice(invoiceToSave);
+    id.then((value) => debugPrint(value.toString()));
+    Navigator.pop(context, invoiceToSave);
   }
 }
