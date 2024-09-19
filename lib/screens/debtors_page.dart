@@ -4,6 +4,7 @@ import 'package:my_debtors/screens/register_debtor_page.dart';
 
 import '../mocks/debtors_list.dart';
 import '../model/Debtor.dart';
+import '../model/menu_type.dart';
 import '../util/db_helper.dart';
 import 'debtor_page.dart';
 
@@ -178,5 +179,3 @@ int countByType(List<Invoice>? invoices, String type) {
       ? invoices.where((invoice) => invoice.typePayment == type).length
       : 0;
 }
-
-enum MenuType { edit, delete }

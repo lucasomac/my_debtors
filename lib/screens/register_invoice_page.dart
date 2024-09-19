@@ -6,9 +6,10 @@ import '../util/db_helper.dart';
 
 class RegisterInvoicePage extends StatefulWidget {
   Debtor debtor;
+  Invoice? invoice;
   DbHelper helper = DbHelper();
 
-  RegisterInvoicePage(this.debtor, {super.key});
+  RegisterInvoicePage(this.debtor, {this.invoice, super.key});
 
   @override
   State<RegisterInvoicePage> createState() => _RegisterInvoicePageState();
@@ -35,9 +36,16 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
 
   @override
   Widget build(BuildContext context) {
+    var invoice = widget.invoice;
+    if (invoice != null) {
+      descriptionController.text = invoice.description;
+      dateController.text = invoice.datePayment;
+      typeController.text = invoice.typePayment;
+      valueController.text = invoice.value.toString();
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculador de Média: Tela de Digitação'),
+        title: const Text('Novo lançamento'),
       ),
       body: Column(
         children: [
@@ -75,7 +83,7 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
           ElevatedButton(
             child: const Text('SALVAR'),
             onPressed: () {
-              _saveInvoiceAndGoBack(context);
+              _saveInvoiceAndGoBack(context, invoice);
             },
           ),
           ElevatedButton(
@@ -89,15 +97,31 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
     );
   }
 
-  _saveInvoiceAndGoBack(BuildContext context) {
-    var invoiceToSave = Invoice(null,
-        datePayment: dateController.text,
-        typePayment: typeController.text,
-        description: descriptionController.text,
-        value: double.parse(valueController.text),
-        debtor: widget.debtor.id! );
-    var id = widget.helper.insertInvoice(invoiceToSave);
+  _saveInvoiceAndGoBack(BuildContext context, Invoice? invoice) {
+    if (invoice != null) {
+      invoice.description = descriptionController.text;
+      invoice.datePayment = dateController.text;
+      invoice.typePayment = typeController.text;
+      invoice.value = double.parse(valueController.text);
+
+      var id = widget.helper.updateInvoice(invoice);
+      id.then((value) => debugPrint(value.toString()));
+    } else {
+      invoice = Invoice(null,
+          datePayment: dateController.text,
+          typePayment: typeController.text,
+          description: descriptionController.text,
+          value: double.parse(valueController.text),
+          debtor: widget.debtor.id!);
+
+      var id = widget.helper.insertInvoice(invoice);
+      id.then((value) => debugPrint(value.toString()));
+    }
+    Navigator.pop(context, invoice);
+  }
+
+  void handleSave(Invoice invoice) {
+    var id = widget.helper.insertInvoice(invoice);
     id.then((value) => debugPrint(value.toString()));
-    Navigator.pop(context, invoiceToSave);
   }
 }

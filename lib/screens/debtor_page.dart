@@ -3,6 +3,7 @@ import 'package:my_debtors/screens/register_invoice_page.dart';
 
 import '../model/Debtor.dart';
 import '../model/Invoice.dart';
+import '../model/menu_type.dart';
 import '../util/db_helper.dart';
 
 class DebtorPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class _DebtorPageState extends State<DebtorPage> {
       body: _getInvoicesFromDatabase(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _goToRegister(context);
+          _goToRegister(context, null);
         },
         child: const Icon(Icons.add),
       ),
@@ -34,37 +35,38 @@ class _DebtorPageState extends State<DebtorPage> {
     return FutureBuilder<List>(
         future: widget.helper.getAllInvoicesByDebtor(widget.debtor.id!),
         builder: (context, future) {
-          if (future.hasData) {
+          if (future.data!.isNotEmpty) {
             var list = future.data!.toList().map((element) {
               return Invoice.fromJson(element);
             });
             return _buildInvoices(list.toList());
           } else {
-            return const Center(
-                child: Text("There are no invoices registered!"));
+            return const Center(child: Text("Nao ha dividas registradas!"));
           }
         });
   }
 
-  _goToRegister(BuildContext context) async {
+  _goToRegister(BuildContext context, Invoice? invoice) async {
     var result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return RegisterInvoicePage(widget.debtor);
+          return RegisterInvoicePage(widget.debtor, invoice: invoice);
         },
       ),
     );
     if (result is Invoice) {
       setState(() {
-        _successAddInvoice(result.value.toString());
+        _successSaveInvoice(result.value.toString(), invoice?.id != null);
       });
     }
   }
 
-  _successAddInvoice(String text) {
+  _successSaveInvoice(String text, bool isUpdate) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("$text foi contabilizado!"),
+      content: isUpdate
+          ? const Text("Lançamento alterado com sucesso!")
+          : Text("Lançamento de $text foi contabilizado com sucesso!"),
       duration: const Duration(seconds: 2),
       width: 180,
       behavior: SnackBarBehavior.floating,
@@ -89,6 +91,63 @@ class _DebtorPageState extends State<DebtorPage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
+        trailing: PopupMenuButton<MenuType>(
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
+            const PopupMenuItem<MenuType>(
+              value: MenuType.edit,
+              child: Text('Editar'),
+            ),
+            const PopupMenuItem<MenuType>(
+              value: MenuType.delete,
+              child: Text('Deletar'),
+            ),
+          ],
+          onSelected: (MenuType menu) {
+            switch (menu) {
+              case MenuType.edit:
+                _goToRegister(context, invoice);
+              case MenuType.delete:
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text('Confirma a exclusão deste lançamento?'),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  widget.helper.deleteInvoice(invoice.id!);
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    _successDeleteInvoice(
+                                        invoice.value.toString());
+                                  });
+                                },
+                                child: const Text('Confirmar'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+            }
+          },
+        ),
         tileColor:
             invoice.typePayment == "C" ? Colors.redAccent : Colors.greenAccent,
         title: Text(
@@ -99,5 +158,15 @@ class _DebtorPageState extends State<DebtorPage> {
         onTap: () {},
       ),
     );
+  }
+
+  _successDeleteInvoice(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Lançamento no valor de $text excluído com sucesso!"),
+      duration: const Duration(seconds: 2),
+      width: 180,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ));
   }
 }
