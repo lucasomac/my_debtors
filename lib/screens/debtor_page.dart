@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_debtors/domain/repository/debtor_repository.dart';
 import 'package:my_debtors/domain/repository/invoice_repository.dart';
+import 'package:my_debtors/mocks/invoices_list.dart';
 import 'package:my_debtors/screens/register_invoice_page.dart';
 
 import '../di/injector.dart';
@@ -26,7 +27,12 @@ class _DebtorPageState extends State<DebtorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.debtor.name)),
-      body: _getInvoicesFromDatabase(),
+      body: Column(
+        children: [
+          _getHeadPage(),
+          Expanded(child: _getInvoicesFromDatabase()),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _goToRegister(context, null);
@@ -34,6 +40,30 @@ class _DebtorPageState extends State<DebtorPage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  _getHeadPage() {
+    return FutureBuilder(
+        future:
+            widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
+        builder: (context, future) {
+          if (future.data?.isNotEmpty ?? false) {
+            var list = future.data!.toList().map((element) {
+              return Invoice.fromJson(element);
+            });
+            var credits = list
+                .where((invoice) => invoice.typePayment == "C")
+                .map((invoice) => invoice.value)
+                .reduce((value, invoice) => value + invoice);
+            var debits = list
+                .where((invoice) => invoice.typePayment == "D")
+                .map((invoice) => invoice.value)
+                .reduce((value, invoice) => value + invoice);
+            return Text("O saldo deste devedor é R\$ ${credits - debits}");
+          } else {
+            return Text("O saldo deste devedor é R\$ 0");
+          }
+        });
   }
 
   _getInvoicesFromDatabase() {
