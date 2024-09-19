@@ -50,9 +50,10 @@ class _DebtorsPageState extends State<DebtorsPage> {
     return FutureBuilder<List>(
         future: widget.helper.getAllDebtors(),
         builder: (context, future) {
-          if (!future.hasData) {
+          debugPrint(future.data.toString());
+          if (future.data!.isEmpty) {
             return const Center(
-                child: Text("There are no debtors registered!"));
+                child: Text("Não há devedores registrados!"));
           } else {
             var list = future.data!.toList().map((element) {
               return Debtor.fromJson(element);
@@ -95,6 +96,43 @@ class _DebtorsPageState extends State<DebtorsPage> {
             case MenuType.edit:
               _goToRegister(context, debtor);
             case MenuType.delete:
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('Confirma a exclusão deste devedor?'),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                widget.helper.deleteDebtor(debtor.id!);
+                                Navigator.pop(context);
+                                setState(() {
+                                  _successDeleteDebtor(debtor.name);
+                                });
+                              },
+                              child: const Text('Confirmar'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
           }
         },
       ),
@@ -117,6 +155,16 @@ class _DebtorsPageState extends State<DebtorsPage> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content:
           Text("$text ${isUpdate ? "alterado" : "adicionado"} com sucesso!"),
+      duration: const Duration(seconds: 2),
+      width: 180,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ));
+  }
+
+  _successDeleteDebtor(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("$text excluído com sucesso!"),
       duration: const Duration(seconds: 2),
       width: 180,
       behavior: SnackBarBehavior.floating,
