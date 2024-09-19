@@ -6,7 +6,6 @@ import 'package:my_debtors/screens/register_debtor_page.dart';
 
 import '../model/Debtor.dart';
 import '../model/menu_type.dart';
-import '../util/db_helper.dart';
 import 'debtor_page.dart';
 
 class DebtorsPage extends StatefulWidget {
@@ -22,7 +21,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Debtors')),
+        appBar: AppBar(title: const Text('Quem me deve?')),
         body: _getDebtorsFromDatabase(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

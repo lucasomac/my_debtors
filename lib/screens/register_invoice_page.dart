@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Debtor.dart';
 import 'package:my_debtors/model/Invoice.dart';
 
-import '../util/db_helper.dart';
+import '../di/injector.dart';
+import '../domain/repository/debtor_repository.dart';
+import '../domain/repository/invoice_repository.dart';
 
 class RegisterInvoicePage extends StatefulWidget {
   Debtor debtor;
   Invoice? invoice;
-  DbHelper helper = DbHelper();
+  InvoiceRepository invoiceRepository =
+      Injector.instance.get<InvoiceRepository>();
 
   RegisterInvoicePage(this.debtor, {this.invoice, super.key});
 
@@ -104,7 +107,7 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
       invoice.typePayment = typeController.text;
       invoice.value = double.parse(valueController.text);
 
-      var id = widget.helper.updateInvoice(invoice);
+      var id = widget.invoiceRepository.updateInvoice(invoice);
       id.then((value) => debugPrint(value.toString()));
     } else {
       invoice = Invoice(null,
@@ -114,14 +117,9 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
           value: double.parse(valueController.text),
           debtor: widget.debtor.id!);
 
-      var id = widget.helper.insertInvoice(invoice);
+      var id = widget.invoiceRepository.insertInvoice(invoice);
       id.then((value) => debugPrint(value.toString()));
     }
     Navigator.pop(context, invoice);
-  }
-
-  void handleSave(Invoice invoice) {
-    var id = widget.helper.insertInvoice(invoice);
-    id.then((value) => debugPrint(value.toString()));
   }
 }

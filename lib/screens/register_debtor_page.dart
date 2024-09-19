@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_debtors/model/Debtor.dart';
 
-import '../util/db_helper.dart';
+import '../di/injector.dart';
+import '../domain/repository/debtor_repository.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
-  DbHelper helper = DbHelper();
+  DebtorRepository repository = Injector.instance.get<DebtorRepository>();
   Debtor? debtor;
 
   RegisterDebtorPage({this.debtor, super.key});
@@ -70,12 +71,12 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
     if (debtor != null) {
       debtor.name = nameController.text;
       debtor.city = cityController.text;
-      var id = widget.helper.updateDebtor(debtor);
+      var id = widget.repository.updateDebtor(debtor);
       id.then((value) => debugPrint(value.toString()));
     } else {
       debtor =
           Debtor(null, name: nameController.text, city: cityController.text);
-      var id = widget.helper.insertDebtor(debtor);
+      var id = widget.repository.insertDebtor(debtor);
       id.then((value) => debugPrint(value.toString()));
     }
     debugPrint("Aqui e o ${debtor.name} de ${debtor.city}");
