@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:my_debtors/domain/repository/debtor_repository.dart';
+import 'package:my_debtors/domain/repository/invoice_repository.dart';
 import 'package:my_debtors/screens/register_invoice_page.dart';
 
+import '../di/injector.dart';
 import '../model/Debtor.dart';
 import '../model/Invoice.dart';
 import '../model/menu_type.dart';
-import '../util/db_helper.dart';
 
 class DebtorPage extends StatefulWidget {
   final Debtor debtor;
-  DbHelper helper = DbHelper();
+
+  DebtorRepository debtorRepository = Injector.instance.get<DebtorRepository>();
+  InvoiceRepository invoiceRepository = Injector.instance.get<InvoiceRepository>();
 
   DebtorPage({super.key, required this.debtor});
 
@@ -33,7 +37,7 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _getInvoicesFromDatabase() {
     return FutureBuilder<List>(
-        future: widget.helper.getAllInvoicesByDebtor(widget.debtor.id!),
+        future: widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
         builder: (context, future) {
           if (future.data!.isNotEmpty) {
             var list = future.data!.toList().map((element) {
@@ -129,7 +133,7 @@ class _DebtorPageState extends State<DebtorPage> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  widget.helper.deleteInvoice(invoice.id!);
+                                  widget.invoiceRepository.deleteInvoice(invoice.id!);
                                   Navigator.pop(context);
                                   setState(() {
                                     _successDeleteInvoice(

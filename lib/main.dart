@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_debtors/di/injector.dart';
 import 'package:my_debtors/screens/debtors_page.dart';
 
-void main() {
+void main() async {
+  Injector.setUpDependencies();
   runApp(const MyApp());
 }
 

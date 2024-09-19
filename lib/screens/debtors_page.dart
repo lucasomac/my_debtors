@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_debtors/di/injector.dart';
+import 'package:my_debtors/domain/repository/debtor_repository.dart';
 import 'package:my_debtors/model/Invoice.dart';
 import 'package:my_debtors/screens/register_debtor_page.dart';
 
-import '../mocks/debtors_list.dart';
 import '../model/Debtor.dart';
 import '../model/menu_type.dart';
 import '../util/db_helper.dart';
@@ -11,7 +12,7 @@ import 'debtor_page.dart';
 class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
 
-  DbHelper helper = DbHelper();
+  DebtorRepository helper = Injector.instance.get<DebtorRepository>();
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();
@@ -53,8 +54,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
         builder: (context, future) {
           debugPrint(future.data.toString());
           if (future.data!.isEmpty) {
-            return const Center(
-                child: Text("Não há devedores registrados!"));
+            return const Center(child: Text("Não há devedores registrados!"));
           } else {
             var list = future.data!.toList().map((element) {
               return Debtor.fromJson(element);
