@@ -5,8 +5,9 @@ import '../util/db_helper.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
   DbHelper helper = DbHelper();
+  Debtor? debtor;
 
-  RegisterDebtorPage({super.key});
+  RegisterDebtorPage({this.debtor, super.key});
 
   @override
   State<RegisterDebtorPage> createState() => _RegisterDebtorPageState();
@@ -18,13 +19,18 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
 
   @override
   Widget build(BuildContext context) {
+    var debtor = widget.debtor;
+    if (debtor != null) {
+      nameController.text = debtor.name;
+      cityController.text = debtor.city;
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("New Debtor"),
         actions: [
           IconButton(
               onPressed: () {
-                _saveDebtorAndGoBack(context);
+                _saveDebtorAndGoBack(context, debtor);
               },
               icon: const Icon(Icons.save))
         ],
@@ -60,11 +66,19 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
     );
   }
 
-  _saveDebtorAndGoBack(BuildContext context) {
-    var debtorToSave =
-        Debtor(null, name: nameController.text, city: cityController.text);
-    var id = widget.helper.insertDebtor(debtorToSave);
-    id.then((value) => debugPrint(value.toString()));
-    Navigator.pop(context, debtorToSave);
+  _saveDebtorAndGoBack(BuildContext context, Debtor? debtor) {
+    if (debtor != null) {
+      debtor.name = nameController.text;
+      debtor.city = cityController.text;
+      var id = widget.helper.updateDebtor(debtor);
+      id.then((value) => debugPrint(value.toString()));
+    } else {
+      debtor =
+          Debtor(null, name: nameController.text, city: cityController.text);
+      var id = widget.helper.insertDebtor(debtor);
+      id.then((value) => debugPrint(value.toString()));
+    }
+    debugPrint("Aqui e o ${debtor.name} de ${debtor.city}");
+    Navigator.pop(context, debtor);
   }
 }

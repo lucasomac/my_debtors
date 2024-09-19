@@ -24,24 +24,24 @@ class _DebtorsPageState extends State<DebtorsPage> {
         body: _getDebtorsFromDatabase(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            _goToRegister(context);
+            _goToRegister(context, null);
           },
           child: const Icon(Icons.add),
         ));
   }
 
-  _goToRegister(BuildContext context) async {
+  _goToRegister(BuildContext context, Debtor? debtor) async {
     var result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return RegisterDebtorPage();
+          return RegisterDebtorPage(debtor: debtor);
         },
       ),
     );
     if (result is Debtor) {
       setState(() {
-        _successAddDebtor(result.name);
+        _successSaveDebtor(result.name, debtor?.id != null);
       });
     }
   }
@@ -79,19 +79,44 @@ class _DebtorsPageState extends State<DebtorsPage> {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(debtor.city),
+      trailing: PopupMenuButton<MenuType>(
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuType>>[
+          const PopupMenuItem<MenuType>(
+            value: MenuType.edit,
+            child: Text('Editar'),
+          ),
+          const PopupMenuItem<MenuType>(
+            value: MenuType.delete,
+            child: Text('Deletar'),
+          ),
+        ],
+        onSelected: (MenuType menu) {
+          switch (menu) {
+            case MenuType.edit:
+              _goToRegister(context, debtor);
+            case MenuType.delete:
+          }
+        },
+      ),
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return DebtorPage(
-            debtor: debtor,
-          );
-        }));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return DebtorPage(
+                debtor: debtor,
+              );
+            },
+          ),
+        ).then((_) => setState(() {}));
       },
     );
   }
 
-  _successAddDebtor(String text) {
+  _successSaveDebtor(String text, bool isUpdate) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("$text adicionado com sucesso!"),
+      content:
+          Text("$text ${isUpdate ? "alterado" : "adicionado"} com sucesso!"),
       duration: const Duration(seconds: 2),
       width: 180,
       behavior: SnackBarBehavior.floating,
@@ -105,3 +130,5 @@ int countByType(List<Invoice>? invoices, String type) {
       ? invoices.where((invoice) => invoice.typePayment == type).length
       : 0;
 }
+
+enum MenuType { edit, delete }
