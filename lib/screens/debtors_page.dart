@@ -53,13 +53,13 @@ class _DebtorsPageState extends State<DebtorsPage> {
         future: widget.helper.getAllDebtors(),
         builder: (context, future) {
           debugPrint(future.data.toString());
-          if (future.data!.isEmpty) {
-            return const Center(child: Text("Não há devedores registrados!"));
-          } else {
+          if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
               return Debtor.fromJson(element);
             });
             return _buildDebtors(list.toList());
+          } else {
+            return const Center(child: Text("Não há devedores registrados!"));
           }
         });
   }

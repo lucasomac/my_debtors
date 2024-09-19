@@ -12,7 +12,8 @@ class DebtorPage extends StatefulWidget {
   final Debtor debtor;
 
   DebtorRepository debtorRepository = Injector.instance.get<DebtorRepository>();
-  InvoiceRepository invoiceRepository = Injector.instance.get<InvoiceRepository>();
+  InvoiceRepository invoiceRepository =
+      Injector.instance.get<InvoiceRepository>();
 
   DebtorPage({super.key, required this.debtor});
 
@@ -37,9 +38,10 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _getInvoicesFromDatabase() {
     return FutureBuilder<List>(
-        future: widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
+        future:
+            widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
         builder: (context, future) {
-          if (future.data!.isNotEmpty) {
+          if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
               return Invoice.fromJson(element);
             });
@@ -133,7 +135,8 @@ class _DebtorPageState extends State<DebtorPage> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  widget.invoiceRepository.deleteInvoice(invoice.id!);
+                                  widget.invoiceRepository
+                                      .deleteInvoice(invoice.id!);
                                   Navigator.pop(context);
                                   setState(() {
                                     _successDeleteInvoice(
