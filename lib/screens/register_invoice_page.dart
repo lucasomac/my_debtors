@@ -66,6 +66,9 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
               controller: dateController,
               decoration: decorate("Data"),
             ),
+          ),Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text("No campo abaixo digitar C para crédito e D para débito"),
           ),
           Padding(
             padding: const EdgeInsets.all(12.0),
