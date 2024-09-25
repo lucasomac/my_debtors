@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../di/injector.dart';
 import '../../domain/model/debt.dart';
+import '../../domain/model/debt_type.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/repository/debt_repository.dart';
+import '../componets/field_entry.dart';
 
 class RegisterDebtPage extends StatefulWidget {
   Debtor debtor;
@@ -17,23 +19,13 @@ class RegisterDebtPage extends StatefulWidget {
 }
 
 class _RegisterDebtPageState extends State<RegisterDebtPage> {
-  TextStyle estilo = const TextStyle(fontSize: 25.0);
   TextEditingController descriptionController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController typeController = TextEditingController();
   TextEditingController valueController = TextEditingController();
+  final GlobalKey<FormState> _newDebtorFormKey = GlobalKey();
 
-//
-// Função que gera um objeto InputDecoration:
-
-//
-  InputDecoration decorate(String t) {
-    return InputDecoration(
-      hintStyle: const TextStyle(fontSize: 25.0),
-      hintText: t,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(6.0)),
-    );
-  }
+  DebtType _currentTypeDebt = DebtType.values.first;
 
   @override
   Widget build(BuildContext context) {
@@ -49,58 +41,90 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
         title: const Text('Novo lançamento'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: descriptionController,
-              decoration: decorate("Descricao"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              keyboardType: TextInputType.datetime,
-              controller: dateController,
-              decoration: decorate("Data"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child:
-                Text("No campo abaixo digitar C para crédito e D para débito"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: typeController,
-              decoration: decorate("Tipo"),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: valueController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              decoration: decorate("Valor"),
-            ),
-          ),
-          ElevatedButton(
-            child: const Text('SALVAR'),
-            onPressed: () {
-              _saveDebtAndGoBack(context, debt);
+          FieldEntry("Descrição", descriptionController, validatorDescription),
+          InkWell(
+            onTap: () {
+              _selectDate();
             },
+            child: IgnorePointer(
+              child: FieldEntry("Data", dateController, validatorDescription),
+            ),
           ),
-          ElevatedButton(
-            child: const Text('CANCELA'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: DropdownButtonFormField<DebtType>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0)),
+              ),
+              items: DebtType.values
+                  .map(
+                    (debtType) => DropdownMenuItem(
+                      value: debtType,
+                      child: Text(debtType.getName()),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (debtType) {
+                setState(() {
+                  _currentTypeDebt = debtType!;
+                });
+              },
+              value: _currentTypeDebt,
+            ),
+          ),
+          FieldEntry(
+            "Valor",
+            valueController,
+            validatorValue,
+            inputType: const TextInputType.numberWithOptions(decimal: true),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              child: const Text('SALVAR'),
+              onPressed: () {
+                _saveDebtAndGoBack(context, debt);
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              child: const Text('CANCELA'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  String? validatorDescription(String? description) {
+    if (description == null || description.isEmpty) {
+      return "O nome não pode estar em branco!";
+    }
+    return null;
+  }
+
+  String? validatorValue(String? value) {
+    if (value == null || value.isEmpty) {
+      return "O valor não pode estar vazio!";
+    }
+    return null;
+  }
+
+  Future _selectDate() async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2100));
+    setState(() => dateController.text = picked.toString());
   }
 
   _saveDebtAndGoBack(BuildContext context, Debt? debt) {

@@ -4,8 +4,10 @@ class FieldEntry extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
   final String? Function(String?)? validator;
+  TextInputType inputType;
 
-  const FieldEntry(this.hint, this.controller, this.validator, {super.key});
+  FieldEntry(this.hint, this.controller, this.validator,
+      {super.key, this.inputType = TextInputType.text});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +15,7 @@ class FieldEntry extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: TextFormField(
         controller: controller,
+        keyboardType: inputType,
         decoration: InputDecoration(
           hintStyle: const TextStyle(fontSize: 16.0),
           hintText: hint,
