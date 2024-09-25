@@ -1,5 +1,5 @@
+import '../../domain/model/debtor.dart';
 import '../../domain/repository/debtor_repository.dart';
-import '../../model/Debtor.dart';
 import '../../util/db_helper.dart';
 
 class DebtorRepositoryImpl implements DebtorRepository {

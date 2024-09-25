@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:my_debtors/model/Debtor.dart';
 
-import '../di/injector.dart';
-import '../domain/repository/debtor_repository.dart';
+import '../../di/injector.dart';
+import '../../domain/model/debtor.dart';
+import '../../domain/repository/debtor_repository.dart';
+import '../componets/field_entry.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
   DebtorRepository repository = Injector.instance.get<DebtorRepository>();
@@ -18,6 +19,8 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController cityController = TextEditingController();
 
+  final GlobalKey<FormState> _newDebtorFormKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     var debtor = widget.debtor;
@@ -31,40 +34,40 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
         actions: [
           IconButton(
               onPressed: () {
-                _saveDebtorAndGoBack(context, debtor);
+                if (_newDebtorFormKey.currentState!.validate()) {
+                  _saveDebtorAndGoBack(context, debtor);
+                }
               },
               icon: const Icon(Icons.save))
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintStyle: const TextStyle(fontSize: 25.0),
-                hintText: "Name",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6.0)),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              controller: cityController,
-              decoration: InputDecoration(
-                hintStyle: const TextStyle(fontSize: 25.0),
-                hintText: "City",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6.0)),
-              ),
-            ),
-          ),
-        ],
+      body: Form(
+        key: _newDebtorFormKey,
+        child: Column(
+          children: [
+            FieldEntry("Nome", nameController, validatorName),
+            FieldEntry("Cidade", cityController, validatorCity),
+          ],
+        ),
       ),
     );
+  }
+
+  String? validatorName(String? name) {
+    if (name == null || name.isEmpty) {
+      return "O nome não pode estar em branco!";
+    }
+    if (name.contains(RegExp(r'<code>0-9</ code>'))) {
+      return "O nome não pode conter dígitos!";
+    }
+    return null;
+  }
+
+  String? validatorCity(String? city) {
+    if (city == null || city.isEmpty) {
+      return "A cidade não pode estar em branco!";
+    }
+    return null;
   }
 
   _saveDebtorAndGoBack(BuildContext context, Debtor? debtor) {

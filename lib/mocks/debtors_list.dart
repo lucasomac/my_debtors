@@ -1,4 +1,4 @@
-import '../model/Debtor.dart';
+import '../domain/model/debtor.dart';
 
 final debtors = [
   Debtor(1, name: "Lucas", city: "Aracaju"),

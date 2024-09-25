@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_debtors/di/injector.dart';
-import 'package:my_debtors/domain/repository/debtor_repository.dart';
-import 'package:my_debtors/model/Invoice.dart';
-import 'package:my_debtors/screens/register_debtor_page.dart';
+import 'package:mydebtors/domain/model/debt.dart';
 
-import '../model/Debtor.dart';
-import '../model/menu_type.dart';
+import '../../di/injector.dart';
+import '../../domain/model/debtor.dart';
+import '../../domain/model/menu_type.dart';
+import '../../domain/repository/debtor_repository.dart';
 import 'debtor_page.dart';
+import 'register_debtor_page.dart';
 
 class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
@@ -173,8 +173,8 @@ class _DebtorsPageState extends State<DebtorsPage> {
   }
 }
 
-int countByType(List<Invoice>? invoices, String type) {
-  return invoices != null
-      ? invoices.where((invoice) => invoice.typePayment == type).length
+int countByType(List<Debt>? debts, String type) {
+  return debts != null
+      ? debts.where((debt) => debt.typePayment == type).length
       : 0;
 }

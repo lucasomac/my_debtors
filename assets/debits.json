@@ -1,7 +1,7 @@
 [
   {
     "name": "Lucas Macedo",
-    "invoices": {
+    "debts": {
       "datePayment": "09/08/2024",
       "typePayment": "C",
       "description": "Celular",
@@ -10,7 +10,7 @@
   },
   {
     "name": "Lucas Macedo",
-    "invoices": {
+    "debts": {
       "datePayment": "29/08/2024",
       "typePayment": "D",
       "description": "Celular",
@@ -19,7 +19,7 @@
   },
   {
     "name": "Mateus Macedo",
-    "invoices": {
+    "debts": {
       "datePayment": "13/08/2024",
       "typePayment": "C",
       "description": "Celular",
@@ -28,7 +28,7 @@
   },
   {
     "name": "Mateus Macedo",
-    "invoices": {
+    "debts": {
       "datePayment": "10/09/2024",
       "typePayment": "D",
       "description": "Celular",

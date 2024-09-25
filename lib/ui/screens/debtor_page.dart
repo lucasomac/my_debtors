@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:my_debtors/domain/repository/debtor_repository.dart';
-import 'package:my_debtors/domain/repository/invoice_repository.dart';
-import 'package:my_debtors/mocks/invoices_list.dart';
-import 'package:my_debtors/screens/register_invoice_page.dart';
 
-import '../di/injector.dart';
-import '../model/Debtor.dart';
-import '../model/Invoice.dart';
-import '../model/menu_type.dart';
+import '../../di/injector.dart';
+import '../../domain/model/debt.dart';
+import '../../domain/model/debtor.dart';
+import '../../domain/model/menu_type.dart';
+import '../../domain/repository/debtor_repository.dart';
+import '../../domain/repository/debt_repository.dart';
+import 'register_debt_page.dart';
 
 class DebtorPage extends StatefulWidget {
   final Debtor debtor;
 
   DebtorRepository debtorRepository = Injector.instance.get<DebtorRepository>();
-  InvoiceRepository invoiceRepository =
-      Injector.instance.get<InvoiceRepository>();
+  DebtRepository debtRepository = Injector.instance.get<DebtRepository>();
 
   DebtorPage({super.key, required this.debtor});
 
@@ -30,7 +28,7 @@ class _DebtorPageState extends State<DebtorPage> {
       body: Column(
         children: [
           _getHeadPage(),
-          Expanded(child: _getInvoicesFromDatabase()),
+          Expanded(child: _getDebtsFromDatabase()),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -44,21 +42,20 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _getHeadPage() {
     return FutureBuilder(
-        future:
-            widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
+        future: widget.debtRepository.getAllDebtsByDebtor(widget.debtor.id!),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
-              return Invoice.fromJson(element);
+              return Debt.fromJson(element);
             });
             var credits = list
-                .where((invoice) => invoice.typePayment == "C")
-                .map((invoice) => invoice.value)
-                .reduce((value, invoice) => value + invoice);
+                .where((debt) => debt.typePayment == "C")
+                .map((debt) => debt.value)
+                .reduce((value, debt) => value + debt);
             var debits = list
-                .where((invoice) => invoice.typePayment == "D")
-                .map((invoice) => invoice.value)
-                .reduce((value, invoice) => value + invoice);
+                .where((debt) => debt.typePayment == "D")
+                .map((debt) => debt.value)
+                .reduce((value, debt) => value + debt);
             return Text("O saldo deste devedor é R\$ ${credits - debits}");
           } else {
             return Text("O saldo deste devedor é R\$ 0");
@@ -66,39 +63,38 @@ class _DebtorPageState extends State<DebtorPage> {
         });
   }
 
-  _getInvoicesFromDatabase() {
+  _getDebtsFromDatabase() {
     return FutureBuilder<List>(
-        future:
-            widget.invoiceRepository.getAllInvoicesByDebtor(widget.debtor.id!),
+        future: widget.debtRepository.getAllDebtsByDebtor(widget.debtor.id!),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
-              return Invoice.fromJson(element);
+              return Debt.fromJson(element);
             });
-            return _buildInvoices(list.toList());
+            return _buildDebts(list.toList());
           } else {
             return const Center(child: Text("Nao ha dividas registradas!"));
           }
         });
   }
 
-  _goToRegister(BuildContext context, Invoice? invoice) async {
+  _goToRegister(BuildContext context, Debt? debt) async {
     var result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return RegisterInvoicePage(widget.debtor, invoice: invoice);
+          return RegisterDebtPage(widget.debtor, debt: debt);
         },
       ),
     );
-    if (result is Invoice) {
+    if (result is Debt) {
       setState(() {
-        _successSaveInvoice(result.value.toString(), invoice?.id != null);
+        _successSaveDebt(result.value.toString(), debt?.id != null);
       });
     }
   }
 
-  _successSaveInvoice(String text, bool isUpdate) {
+  _successSaveDebt(String text, bool isUpdate) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: isUpdate
           ? const Text("Lançamento alterado com sucesso!")
@@ -110,17 +106,17 @@ class _DebtorPageState extends State<DebtorPage> {
     ));
   }
 
-  _buildInvoices(List<Invoice> invoices) {
+  _buildDebts(List<Debt> debts) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: invoices.length,
+      itemCount: debts.length,
       itemBuilder: (context, index) {
-        return _buildInvoiceRow(invoices[index]);
+        return _buildDebtRow(debts[index]);
       },
     );
   }
 
-  _buildInvoiceRow(Invoice invoice) {
+  _buildDebtRow(Debt debt) {
     return Card(
       elevation: 8,
       child: ListTile(
@@ -141,7 +137,7 @@ class _DebtorPageState extends State<DebtorPage> {
           onSelected: (MenuType menu) {
             switch (menu) {
               case MenuType.edit:
-                _goToRegister(context, invoice);
+                _goToRegister(context, debt);
               case MenuType.delete:
                 showDialog<String>(
                   context: context,
@@ -165,12 +161,10 @@ class _DebtorPageState extends State<DebtorPage> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  widget.invoiceRepository
-                                      .deleteInvoice(invoice.id!);
+                                  widget.debtRepository.deleteDebt(debt.id!);
                                   Navigator.pop(context);
                                   setState(() {
-                                    _successDeleteInvoice(
-                                        invoice.value.toString());
+                                    _successDeleteDebt(debt.value.toString());
                                   });
                                 },
                                 child: const Text('Confirmar'),
@@ -186,18 +180,18 @@ class _DebtorPageState extends State<DebtorPage> {
           },
         ),
         tileColor:
-            invoice.typePayment == "C" ? Colors.redAccent : Colors.greenAccent,
+            debt.typePayment == "C" ? Colors.redAccent : Colors.greenAccent,
         title: Text(
-          invoice.description,
+          debt.description,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("R\$ ${invoice.value} - ${invoice.datePayment}"),
+        subtitle: Text("R\$ ${debt.value} - ${debt.datePayment}"),
         onTap: () {},
       ),
     );
   }
 
-  _successDeleteInvoice(String text) {
+  _successDeleteDebt(String text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text("Lançamento no valor de $text excluído com sucesso!"),
       duration: const Duration(seconds: 2),

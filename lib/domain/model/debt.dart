@@ -1,4 +1,4 @@
-class Invoice {
+class Debt {
   int? _id;
   late String _datePayment;
   late String _typePayment;
@@ -6,7 +6,7 @@ class Invoice {
   late num _value;
   late int _debtor;
 
-  Invoice(this._id,
+  Debt(this._id,
       {required String datePayment,
       required String typePayment,
       required String description,
@@ -19,7 +19,7 @@ class Invoice {
     _debtor = debtor;
   }
 
-  Invoice.fromJson(dynamic json) {
+  Debt.fromJson(dynamic json) {
     _id = json['id'];
     _datePayment = json['datePayment'];
     _typePayment = json['typePayment'];

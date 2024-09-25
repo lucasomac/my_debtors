@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:my_debtors/model/Debtor.dart';
-import 'package:my_debtors/model/Invoice.dart';
 
-import '../di/injector.dart';
-import '../domain/repository/debtor_repository.dart';
-import '../domain/repository/invoice_repository.dart';
+import '../../di/injector.dart';
+import '../../domain/model/debt.dart';
+import '../../domain/model/debtor.dart';
+import '../../domain/repository/debt_repository.dart';
 
-class RegisterInvoicePage extends StatefulWidget {
+class RegisterDebtPage extends StatefulWidget {
   Debtor debtor;
-  Invoice? invoice;
-  InvoiceRepository invoiceRepository =
-      Injector.instance.get<InvoiceRepository>();
+  Debt? debt;
+  DebtRepository debtRepository = Injector.instance.get<DebtRepository>();
 
-  RegisterInvoicePage(this.debtor, {this.invoice, super.key});
+  RegisterDebtPage(this.debtor, {this.debt, super.key});
 
   @override
-  State<RegisterInvoicePage> createState() => _RegisterInvoicePageState();
+  State<RegisterDebtPage> createState() => _RegisterDebtPageState();
 }
 
-class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
+class _RegisterDebtPageState extends State<RegisterDebtPage> {
   TextStyle estilo = const TextStyle(fontSize: 25.0);
   TextEditingController descriptionController = TextEditingController();
   TextEditingController dateController = TextEditingController();
@@ -39,12 +37,12 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
 
   @override
   Widget build(BuildContext context) {
-    var invoice = widget.invoice;
-    if (invoice != null) {
-      descriptionController.text = invoice.description;
-      dateController.text = invoice.datePayment;
-      typeController.text = invoice.typePayment;
-      valueController.text = invoice.value.toString();
+    var debt = widget.debt;
+    if (debt != null) {
+      descriptionController.text = debt.description;
+      dateController.text = debt.datePayment;
+      typeController.text = debt.typePayment;
+      valueController.text = debt.value.toString();
     }
     return Scaffold(
       appBar: AppBar(
@@ -66,9 +64,11 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
               controller: dateController,
               decoration: decorate("Data"),
             ),
-          ),Padding(
+          ),
+          Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Text("No campo abaixo digitar C para crédito e D para débito"),
+            child:
+                Text("No campo abaixo digitar C para crédito e D para débito"),
           ),
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -89,7 +89,7 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
           ElevatedButton(
             child: const Text('SALVAR'),
             onPressed: () {
-              _saveInvoiceAndGoBack(context, invoice);
+              _saveDebtAndGoBack(context, debt);
             },
           ),
           ElevatedButton(
@@ -103,26 +103,26 @@ class _RegisterInvoicePageState extends State<RegisterInvoicePage> {
     );
   }
 
-  _saveInvoiceAndGoBack(BuildContext context, Invoice? invoice) {
-    if (invoice != null) {
-      invoice.description = descriptionController.text;
-      invoice.datePayment = dateController.text;
-      invoice.typePayment = typeController.text;
-      invoice.value = double.parse(valueController.text);
+  _saveDebtAndGoBack(BuildContext context, Debt? debt) {
+    if (debt != null) {
+      debt.description = descriptionController.text;
+      debt.datePayment = dateController.text;
+      debt.typePayment = typeController.text;
+      debt.value = double.parse(valueController.text);
 
-      var id = widget.invoiceRepository.updateInvoice(invoice);
+      var id = widget.debtRepository.updateDebt(debt);
       id.then((value) => debugPrint(value.toString()));
     } else {
-      invoice = Invoice(null,
+      debt = Debt(null,
           datePayment: dateController.text,
           typePayment: typeController.text,
           description: descriptionController.text,
           value: double.parse(valueController.text),
           debtor: widget.debtor.id!);
 
-      var id = widget.invoiceRepository.insertInvoice(invoice);
+      var id = widget.debtRepository.insertDebt(debt);
       id.then((value) => debugPrint(value.toString()));
     }
-    Navigator.pop(context, invoice);
+    Navigator.pop(context, debt);
   }
 }

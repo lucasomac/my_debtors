@@ -1,4 +1,4 @@
-# my_debtors
+# mydebtors
 
 Aplication with my debtors
 

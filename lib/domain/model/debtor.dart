@@ -1,5 +1,3 @@
-import 'invoice.dart';
-
 class Debtor {
   int? _id;
   late String _name;

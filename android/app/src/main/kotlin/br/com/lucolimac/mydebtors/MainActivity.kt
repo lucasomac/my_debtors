@@ -1,4 +1,4 @@
-package br.com.lucolimac.my_debtors
+package br.com.lucolimac.mydebtors
 
 import io.flutter.embedding.android.FlutterActivity
 

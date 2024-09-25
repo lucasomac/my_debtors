@@ -1,5 +1,4 @@
-import '../../model/Debtor.dart';
-import '../../model/Invoice.dart';
+import '../model/debtor.dart';
 
 abstract class DebtorRepository {
   Future<int> insertDebtor(Debtor debtor);

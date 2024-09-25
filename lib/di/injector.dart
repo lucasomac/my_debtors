@@ -1,8 +1,8 @@
-import 'package:my_debtors/data/repository/debtor_repository_impl.dart';
-import 'package:my_debtors/data/repository/invoice_repository_impl.dart';
-import 'package:my_debtors/domain/repository/debtor_repository.dart';
-import 'package:my_debtors/domain/repository/invoice_repository.dart';
-import 'package:my_debtors/util/db_helper.dart';
+import '../data/repository/debt_repository_impl.dart';
+import '../data/repository/debtor_repository_impl.dart';
+import '../domain/repository/debt_repository.dart';
+import '../domain/repository/debtor_repository.dart';
+import '../util/db_helper.dart';
 
 class Injector {
   static Injector? _instance;
@@ -33,8 +33,7 @@ class Injector {
     //Database
     injector.add<DbHelper>(DbHelper());
     // repositories
-    injector.add<InvoiceRepository>(
-        InvoiceRepositoryImpl(injector.get<DbHelper>()));
+    injector.add<DebtRepository>(DebtRepositoryImpl(injector.get<DbHelper>()));
     injector
         .add<DebtorRepository>(DebtorRepositoryImpl(injector.get<DbHelper>()));
   }
