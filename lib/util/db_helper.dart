@@ -12,6 +12,8 @@ class DbHelper {
   String columnDebtorId = "id";
   String columnDebtorName = "name";
   String columnDebtorCity = "city";
+  String columnDebtorEmail = "email";
+  String columnDebtorCellphone = "cellphone";
 
   // Table Debt
   String tableDebt = "debt";
@@ -38,13 +40,13 @@ class DbHelper {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}mydebtors.db";
     var dbMyDebtors = await openDatabase(path,
-        version: 1, onCreate: _createDb, onConfigure: _onConfigure);
+        version: 2, onCreate: _createDb, onConfigure: _onConfigure);
     return dbMyDebtors;
   }
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        "CREATE TABLE $tableDebtor ($columnDebtorId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtorName TEXT, $columnDebtorCity TEXT);");
+        "CREATE TABLE $tableDebtor ($columnDebtorId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtorName TEXT, $columnDebtorCity TEXT, $columnDebtorEmail TEXT, $columnDebtorCellphone TEXT);");
     await db.execute("CREATE TABLE $tableDebt ("
         "$columnDebtId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtDatePayment TEXT, $columnDebtTypePayment TEXT,"
         "$columnDebtDescriptionPayment TEXT, $columnDebtValuePayment DOUBLE,"
@@ -81,8 +83,8 @@ class DbHelper {
 
   Future<List> getAllDebtsByDebtor(int debtorId) async {
     Database db = await this.db;
-    var result = await db.query(tableDebt,
-        where: "$columnDebtDebtor = $debtorId");
+    var result =
+        await db.query(tableDebt, where: "$columnDebtDebtor = $debtorId");
     return result;
   }
 
