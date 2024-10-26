@@ -13,13 +13,13 @@ class DebtRepositoryImpl implements DebtRepository {
   }
 
   @override
-  Future<List> getAllDebtsByDebtor(int debtorId) {
-    return helper.getAllDebtsByDebtor(debtorId);
+  Future<List> getAllDebtsByDebtorEmail(String email) {
+    return helper.getAllDebtsByDebtor(email);
   }
 
   @override
-  Future<int> getCountDebtsByDebtor(int debtorId) {
-    return helper.getCountDebtsByDebtor(debtorId);
+  Future<int> getCountDebtsByDebtor(String email) {
+    return helper.getCountDebtsByDebtorCellphone(email);
   }
 
   @override

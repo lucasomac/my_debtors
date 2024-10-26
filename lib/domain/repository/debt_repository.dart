@@ -3,9 +3,9 @@ import '../model/debt.dart';
 abstract class DebtRepository {
   Future<int> insertDebt(Debt debt);
 
-  Future<List> getAllDebtsByDebtor(int debtorId);
+  Future<List> getAllDebtsByDebtorEmail(String email);
 
-  Future<int> getCountDebtsByDebtor(int debtorId);
+  Future<int> getCountDebtsByDebtor(String email);
 
   Future<int> updateDebt(Debt debt);
 

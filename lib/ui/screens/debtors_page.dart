@@ -42,7 +42,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
     );
     if (result is Debtor) {
       setState(() {
-        _successSaveDebtor(result.name, debtor?.id != null);
+        _successSaveDebtor(result.name, debtor?.email != null);
       });
     }
   }
@@ -118,7 +118,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                widget.helper.deleteDebtor(debtor.id!);
+                                widget.helper.deleteDebtor(debtor.email);
                                 Navigator.pop(context);
                                 setState(() {
                                   _successDeleteDebtor(debtor.name);

@@ -1,5 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
+
 import '../data/repository/debt_repository_impl.dart';
-import '../data/repository/debtor_repository_impl.dart';
+import '../data/repository/debtor_firebase_repository_impl.dart';
 import '../domain/repository/debt_repository.dart';
 import '../domain/repository/debtor_repository.dart';
 import '../util/db_helper.dart';
@@ -32,9 +34,10 @@ class Injector {
 
     //Database
     injector.add<DbHelper>(DbHelper());
+    injector.add<FirebaseDatabase>(FirebaseDatabase.instance);
     // repositories
     injector.add<DebtRepository>(DebtRepositoryImpl(injector.get<DbHelper>()));
-    injector
-        .add<DebtorRepository>(DebtorRepositoryImpl(injector.get<DbHelper>()));
+    injector.add<DebtorRepository>(DebtorFirebaseRepositoryImpl(
+        injector.get<DbHelper>(), injector.get<FirebaseDatabase>()));
   }
 }

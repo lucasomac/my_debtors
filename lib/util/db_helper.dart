@@ -9,7 +9,6 @@ import '../domain/model/debtor.dart';
 class DbHelper {
   // Table Debtor
   String tableDebtor = "debtor";
-  String columnDebtorId = "id";
   String columnDebtorName = "name";
   String columnDebtorCity = "city";
   String columnDebtorEmail = "email";
@@ -46,12 +45,12 @@ class DbHelper {
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        "CREATE TABLE $tableDebtor ($columnDebtorId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtorName TEXT, $columnDebtorCity TEXT, $columnDebtorEmail TEXT, $columnDebtorCellphone TEXT);");
+        "CREATE TABLE $tableDebtor ($columnDebtorName TEXT, $columnDebtorCity TEXT, $columnDebtorEmail TEXT PRIMARY KEY, $columnDebtorCellphone TEXT);");
     await db.execute("CREATE TABLE $tableDebt ("
         "$columnDebtId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtDatePayment TEXT, $columnDebtTypePayment TEXT,"
         "$columnDebtDescriptionPayment TEXT, $columnDebtValuePayment DOUBLE,"
-        "$columnDebtDebtor INTEGER, "
-        "FOREIGN KEY ($columnDebtDebtor) REFERENCES $tableDebtor (id) ON DELETE CASCADE ON UPDATE CASCADE"
+        "$columnDebtDebtor TEXT, "
+        "FOREIGN KEY ($columnDebtDebtor) REFERENCES $tableDebtor ($columnDebtorCellphone) ON DELETE CASCADE ON UPDATE CASCADE"
         ")");
   }
 
@@ -62,10 +61,10 @@ class DbHelper {
     return _db!;
   }
 
-  Future<int> insertDebtor(Debtor debtor) async {
+  Future<String> insertDebtor(Debtor debtor) async {
     Database db = await this.db;
     var result = await db.insert(tableDebtor, debtor.toJson());
-    return result;
+    return Future.value(result.toString());
   }
 
   Future<int> insertDebt(Debt debt) async {
@@ -77,14 +76,14 @@ class DbHelper {
   Future<List> getAllDebtors() async {
     Database db = await this.db;
     var result = await db
-        .rawQuery("SELECT * FROM $tableDebtor order by $columnDebtorId ASC");
+        .rawQuery("SELECT * FROM $tableDebtor order by $columnDebtorName ASC");
     return result;
   }
 
-  Future<List> getAllDebtsByDebtor(int debtorId) async {
+  Future<List> getAllDebtsByDebtor(String email) async {
     Database db = await this.db;
     var result =
-        await db.query(tableDebt, where: "$columnDebtDebtor = $debtorId");
+        await db.query(tableDebt, where: "$columnDebtDebtor = $email");
     return result;
   }
 
@@ -95,17 +94,17 @@ class DbHelper {
     return result!;
   }
 
-  Future<int> getCountDebtsByDebtor(int debtorId) async {
+  Future<int> getCountDebtsByDebtorCellphone(String email) async {
     Database db = await this.db;
     var result = Sqflite.firstIntValue(await db.rawQuery(
-        "SELECT COUNT (*) FROM $tableDebt WHERE $columnDebtDebtor = $debtorId"));
+        "SELECT COUNT (*) FROM $tableDebt WHERE $columnDebtDebtor = $email"));
     return result!;
   }
 
   Future<int> updateDebtor(Debtor debtor) async {
     var db = await this.db;
     var result = await db.update(tableDebtor, debtor.toJson(),
-        where: "$columnDebtorId = ?", whereArgs: [debtor.id]);
+        where: "$columnDebtorEmail = ?", whereArgs: [debtor.email]);
     return result;
   }
 
@@ -116,11 +115,11 @@ class DbHelper {
     return result;
   }
 
-  Future<int> deleteDebtor(int id) async {
+  Future<int> deleteDebtor(String email) async {
     int result;
     var db = await this.db;
     result = await db
-        .rawDelete('DELETE FROM $tableDebtor WHERE $columnDebtorId = $id');
+        .rawDelete('DELETE FROM $tableDebtor WHERE $columnDebtorEmail = $email');
     return result;
   }
 
@@ -128,7 +127,7 @@ class DbHelper {
     int result;
     var db = await this.db;
     result = await db
-        .rawDelete('DELETE FROM $tableDebt WHERE $columnDebtorId = $id');
+        .rawDelete('DELETE FROM $tableDebt WHERE $columnDebtId = $id');
     return result;
   }
 }

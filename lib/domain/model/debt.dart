@@ -4,14 +4,14 @@ class Debt {
   late String _typePayment;
   late String _description;
   late num _value;
-  late int _debtor;
+  late String _debtor;
 
   Debt(this._id,
       {required String datePayment,
       required String typePayment,
       required String description,
       required num value,
-      required int debtor}) {
+      required String debtor}) {
     _datePayment = datePayment;
     _typePayment = typePayment;
     _description = description;
@@ -38,7 +38,7 @@ class Debt {
 
   num get value => _value;
 
-  int get debtor => _debtor;
+  String get debtor => _debtor;
 
   set id(int? value) {
     _id = value;
@@ -59,7 +59,7 @@ class Debt {
     _datePayment = value;
   }
 
-  set debtor(int value) {
+  set debtor(String value) {
     _debtor = value;
   }
 

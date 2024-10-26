@@ -8,8 +8,9 @@ class DebtorRepositoryImpl implements DebtorRepository {
   DebtorRepositoryImpl(this.helper);
 
   @override
-  Future<int> deleteDebtor(int id) {
-    return helper.deleteDebtor(id);
+  Future<String> deleteDebtor(String email) {
+     helper.deleteDebtor(email);
+    return Future.value(email);
   }
 
   @override
@@ -23,12 +24,13 @@ class DebtorRepositoryImpl implements DebtorRepository {
   }
 
   @override
-  Future<int> insertDebtor(Debtor debtor) {
+  Future<String> insertDebtor(Debtor debtor) {
     return helper.insertDebtor(debtor);
   }
 
   @override
-  Future<int> updateDebtor(Debtor debtor) {
-    return helper.updateDebtor(debtor);
+  Future<String> updateDebtor(Debtor debtor) {
+    helper.updateDebtor(debtor);
+    return Future.value(debtor.email);
   }
 }

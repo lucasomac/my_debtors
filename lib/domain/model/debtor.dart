@@ -1,12 +1,10 @@
 class Debtor {
-  int? _id;
   late String _name;
   late String _city;
   late String _email;
   late String _cellphone;
 
-  Debtor(
-    this._id, {
+  Debtor({
     required String name,
     required String city,
     required String email,
@@ -19,14 +17,11 @@ class Debtor {
   }
 
   Debtor.fromJson(dynamic json) {
-    _id = json['id'];
     _name = json['name'];
     _city = json['city'];
     _email = json['email'];
     _cellphone = json['cellphone'];
   }
-
-  int? get id => _id;
 
   String get name => _name;
 
@@ -35,10 +30,6 @@ class Debtor {
   String get email => _email;
 
   String get cellphone => _cellphone;
-
-  set id(int? value) {
-    _id = value;
-  }
 
   set email(String value) {
     _email = value;
@@ -58,7 +49,6 @@ class Debtor {
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = _id;
     map['name'] = _name;
     map['city'] = _city;
     map['email'] = _email;

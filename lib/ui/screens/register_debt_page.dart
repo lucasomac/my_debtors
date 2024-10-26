@@ -5,7 +5,7 @@ import '../../domain/model/debt.dart';
 import '../../domain/model/debt_type.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/repository/debt_repository.dart';
-import '../componets/field_entry.dart';
+import '../components/field_entry.dart';
 
 class RegisterDebtPage extends StatefulWidget {
   Debtor debtor;
@@ -142,7 +142,7 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
           typePayment: typeController.text,
           description: descriptionController.text,
           value: double.parse(valueController.text),
-          debtor: widget.debtor.id!);
+          debtor: widget.debtor.email);
 
       var id = widget.debtRepository.insertDebt(debt);
       id.then((value) => debugPrint(value.toString()));

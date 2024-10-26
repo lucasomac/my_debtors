@@ -6,11 +6,11 @@ import 'di/injector.dart';
 import 'ui/screens/debtors_page.dart';
 
 void main() async {
-  Injector.setUpDependencies();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Injector.setUpDependencies();
   runApp(const MyApp());
 }
 

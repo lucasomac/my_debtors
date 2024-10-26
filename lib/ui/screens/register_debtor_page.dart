@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../di/injector.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/repository/debtor_repository.dart';
-import '../componets/field_entry.dart';
+import '../components/field_entry.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
   DebtorRepository repository = Injector.instance.get<DebtorRepository>();
@@ -25,10 +25,12 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
 
   @override
   Widget build(BuildContext context) {
-    var debtor = widget.debtor;
+    Debtor? debtor = widget.debtor;
     if (debtor != null) {
       nameController.text = debtor.name;
       cityController.text = debtor.city;
+      emailController.text = debtor.email;
+      cellphoneController.text = debtor.cellphone;
     }
     return Scaffold(
       appBar: AppBar(
@@ -97,10 +99,12 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
     if (debtor != null) {
       debtor.name = nameController.text;
       debtor.city = cityController.text;
+      debtor.email = emailController.text;
+      debtor.cellphone = cellphoneController.text;
       var id = widget.repository.updateDebtor(debtor);
       id.then((value) => debugPrint(value.toString()));
     } else {
-      debtor = Debtor(null,
+      debtor = Debtor(
           name: nameController.text,
           city: cityController.text,
           email: emailController.text,

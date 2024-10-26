@@ -4,8 +4,8 @@ import '../../di/injector.dart';
 import '../../domain/model/debt.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/model/menu_type.dart';
-import '../../domain/repository/debtor_repository.dart';
 import '../../domain/repository/debt_repository.dart';
+import '../../domain/repository/debtor_repository.dart';
 import 'register_debt_page.dart';
 
 class DebtorPage extends StatefulWidget {
@@ -42,7 +42,8 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _getHeadPage() {
     return FutureBuilder(
-        future: widget.debtRepository.getAllDebtsByDebtor(widget.debtor.id!),
+        future:
+            widget.debtRepository.getAllDebtsByDebtorEmail(widget.debtor.email),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
@@ -65,7 +66,8 @@ class _DebtorPageState extends State<DebtorPage> {
 
   _getDebtsFromDatabase() {
     return FutureBuilder<List>(
-        future: widget.debtRepository.getAllDebtsByDebtor(widget.debtor.id!),
+        future:
+            widget.debtRepository.getAllDebtsByDebtorEmail(widget.debtor.email),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
             var list = future.data!.toList().map((element) {
