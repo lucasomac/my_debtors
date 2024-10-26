@@ -11,7 +11,8 @@ import 'register_debtor_page.dart';
 class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
 
-  DebtorRepository helper = Injector.instance.get<DebtorRepository>();
+  DebtorRepository helper = Injector.instance
+      .get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();
@@ -118,7 +119,7 @@ class _DebtorsPageState extends State<DebtorsPage> {
                             ),
                             TextButton(
                               onPressed: () {
-                                widget.helper.deleteDebtor(debtor.email);
+                                widget.helper.deleteDebtor(debtor.cellphone);
                                 Navigator.pop(context);
                                 setState(() {
                                   _successDeleteDebtor(debtor.name);

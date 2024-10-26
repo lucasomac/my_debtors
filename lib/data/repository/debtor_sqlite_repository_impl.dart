@@ -2,10 +2,10 @@ import '../../domain/model/debtor.dart';
 import '../../domain/repository/debtor_repository.dart';
 import '../../util/db_helper.dart';
 
-class DebtorRepositoryImpl implements DebtorRepository {
+class DebtorSqliteRepositoryImpl implements DebtorRepository {
   DbHelper helper;
 
-  DebtorRepositoryImpl(this.helper);
+  DebtorSqliteRepositoryImpl(this.helper);
 
   @override
   Future<String> deleteDebtor(String email) {
