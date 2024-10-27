@@ -15,20 +15,26 @@ class DebtorFirebaseRepositoryImpl implements DebtorRepository {
   }
 
   @override
-  Future<String> deleteDebtor(String cellphone) {
-    reference.child(cellphone).remove();
-    return Future.value(cellphone);
+  Future<bool> insertDebtor(Debtor debtor) {
+    reference.child(debtor.cellphone).set(debtor.toJson());
+    var result = reference.child(debtor.cellphone).get().then((onValue) {
+      return onValue.value != null;
+    });
+    return Future.value(result);
   }
 
   @override
-  Future<List> getAllDebtors() async {
+  Future<List<Debtor>> getAllDebtors() async {
     List<Debtor> debtors = [];
     final snapshot = await reference.get();
-
     if (snapshot.value == null) {
       return debtors;
     }
-    return (snapshot.value as Map<dynamic, dynamic>).values.toList();
+    final map = snapshot.value as Map<dynamic, dynamic>;
+    map.forEach((key, value) {
+      debtors.add(Debtor.fromJson(value));
+    });
+    return debtors;
   }
 
   @override
@@ -40,14 +46,29 @@ class DebtorFirebaseRepositoryImpl implements DebtorRepository {
   }
 
   @override
-  Future<String> insertDebtor(Debtor debtor) {
-    reference.child(debtor.cellphone).set(debtor.toJson());
-    return Future.value(debtor.cellphone);
+  Future<bool> updateDebtor(Debtor debtor) {
+    reference.child(debtor.cellphone).update(debtor.toJson());
+    var result = reference.child(debtor.cellphone).get().then((onValue) {
+      return onValue.value != null;
+    });
+    return Future.value(result);
   }
 
   @override
-  Future<String> updateDebtor(Debtor debtor) {
-    reference.child(debtor.cellphone).update(debtor.toJson());
-    return Future.value(debtor.cellphone);
+  Future<bool> deleteDebtor(String cellphone) {
+    reference.child(cellphone).remove();
+    var result = reference.child(cellphone).get().then((onValue) {
+      return onValue.value == null;
+    });
+    return Future.value(result);
+  }
+
+  @override
+  Future<Debtor?> getByField(String fieldToSearch) async {
+    final snapshot = await reference.child(fieldToSearch).get();
+    if (snapshot.value == null) {
+      return null;
+    }
+    return Debtor.fromJson(snapshot.value);
   }
 }

@@ -6,12 +6,14 @@ import '../../domain/model/debtor.dart';
 import '../../domain/model/menu_type.dart';
 import '../../domain/repository/debt_repository.dart';
 import '../../domain/repository/debtor_repository.dart';
+import 'package:intl/intl.dart';
 import 'register_debt_page.dart';
 
 class DebtorPage extends StatefulWidget {
-  final Debtor debtor;
+  Debtor debtor;
 
-  DebtorRepository debtorRepository = Injector.instance.get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
+  DebtorRepository debtorRepository = Injector.instance
+      .get<DebtorRepository>(nominal: Nominal.FIREBASE_FIRESTORE);
   DebtRepository debtRepository = Injector.instance.get<DebtRepository>();
 
   DebtorPage({super.key, required this.debtor});
@@ -57,9 +59,11 @@ class _DebtorPageState extends State<DebtorPage> {
                 .where((debt) => debt.typePayment == "D")
                 .map((debt) => debt.value)
                 .reduce((value, debt) => value + debt);
-            return Text("O saldo deste devedor é R\$ ${credits - debits}");
+            var valueFormated = NumberFormat("###.0#", "pt_BR")
+                .format((credits - debits).toStringAsFixed(2));
+            return Text("O saldo deste devedor é $valueFormated");
           } else {
-            return Text("O saldo deste devedor é R\$ 0");
+            return const Text("O saldo deste devedor é R\$ 0,00");
           }
         });
   }

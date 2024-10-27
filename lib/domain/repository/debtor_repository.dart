@@ -1,13 +1,15 @@
 import '../model/debtor.dart';
 
 abstract class DebtorRepository {
-  Future<String> insertDebtor(Debtor debtor);
+  Future<bool> insertDebtor(Debtor debtor);
 
-  Future<List> getAllDebtors();
+  Future<List<Debtor>> getAllDebtors();
 
   Future<int> getCountDebtors();
 
-  Future<String> updateDebtor(Debtor debtor);
+  Future<bool> updateDebtor(Debtor debtor);
 
-  Future<String> deleteDebtor(String email);
+  Future<bool> deleteDebtor(String fieldToSearch);
+
+  Future<Debtor?> getByField(String fieldToSearch);
 }

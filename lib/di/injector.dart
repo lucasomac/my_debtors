@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:mydebtors/data/repository/debtor_firestore_repository_impl.dart';
 import 'package:mydebtors/data/repository/debtor_sqlite_repository_impl.dart';
 
 import '../data/repository/debt_repository_impl.dart';
@@ -7,7 +9,7 @@ import '../domain/repository/debt_repository.dart';
 import '../domain/repository/debtor_repository.dart';
 import '../util/db_helper.dart';
 
-enum Nominal { DEFAULT, SQLITE, FIREBASE_DATABASE }
+enum Nominal { DEFAULT, SQLITE, FIREBASE_DATABASE, FIREBASE_FIRESTORE }
 
 class Injector {
   static Injector? _instance;
@@ -57,6 +59,7 @@ class Injector {
     //Database
     injector._add<DbHelper>(DbHelper());
     injector._add<FirebaseDatabase>(FirebaseDatabase.instance);
+    injector._add<FirebaseFirestore>(FirebaseFirestore.instance);
     // repositories
     injector._add<DebtRepository>(DebtRepositoryImpl(injector.get<DbHelper>()));
     injector._add<DebtorRepository>(
@@ -65,5 +68,8 @@ class Injector {
     injector._add<DebtorRepository>(
         DebtorSqliteRepositoryImpl(injector.get<DbHelper>()),
         nominal: Nominal.SQLITE);
+    injector._add<DebtorRepository>(
+        DebtorFirestoreRepositoryImpl(injector.get<FirebaseFirestore>()),
+        nominal: Nominal.FIREBASE_FIRESTORE);
   }
 }

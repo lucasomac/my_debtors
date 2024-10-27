@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mydebtors/data/repository/debtor_firebase_repository_impl.dart';
 import 'package:mydebtors/domain/model/debt.dart';
 
 import '../../di/injector.dart';
@@ -11,8 +12,8 @@ import 'register_debtor_page.dart';
 class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
 
-  DebtorRepository helper = Injector.instance
-      .get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
+  DebtorRepository repository =
+      Injector.instance.get<DebtorRepository>(nominal: Nominal.SQLITE);
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();
@@ -49,15 +50,12 @@ class _DebtorsPageState extends State<DebtorsPage> {
   }
 
   _getDebtorsFromDatabase() {
-    return FutureBuilder<List>(
-        future: widget.helper.getAllDebtors(),
+    return FutureBuilder<List<Debtor>>(
+        future: widget.repository.getAllDebtors(),
         builder: (context, future) {
-          debugPrint(future.data.toString());
           if (future.data?.isNotEmpty ?? false) {
-            var list = future.data!.toList().map((element) {
-              return Debtor.fromJson(element);
-            });
-            return _buildDebtors(list.toList());
+            var list = future.data;
+            return _buildDebtors(list!);
           } else {
             return const Center(child: Text("Não há devedores registrados!"));
           }
@@ -118,12 +116,20 @@ class _DebtorsPageState extends State<DebtorsPage> {
                               child: const Text('Cancelar'),
                             ),
                             TextButton(
-                              onPressed: () {
-                                widget.helper.deleteDebtor(debtor.cellphone);
-                                Navigator.pop(context);
-                                setState(() {
-                                  _successDeleteDebtor(debtor.name);
+                              onPressed: () async {
+                                var fieldToDelete = widget.repository
+                                        is DebtorFirebaseRepositoryImpl
+                                    ? debtor.cellphone
+                                    : debtor.email;
+                                widget.repository
+                                    .deleteDebtor(fieldToDelete)
+                                    .then((onValue) {
+                                  setState(() {
+                                    _handleCallbackDeleteDebtor(
+                                        onValue, debtor.name);
+                                  });
                                 });
+                                Navigator.pop(context);
                               },
                               child: const Text('Confirmar'),
                             ),
@@ -163,9 +169,11 @@ class _DebtorsPageState extends State<DebtorsPage> {
     ));
   }
 
-  _successDeleteDebtor(String text) {
+  _handleCallbackDeleteDebtor(bool isDeleted, String text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text("$text excluído com sucesso!"),
+      content: Text(isDeleted
+          ? "$text excluído com sucesso!"
+          : "Erro ao excluir $text. Tente novamente."),
       duration: const Duration(seconds: 2),
       width: 180,
       behavior: SnackBarBehavior.floating,

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Debtor {
   late String _name;
   late String _city;
@@ -21,6 +23,13 @@ class Debtor {
     _city = json['city'];
     _email = json['email'];
     _cellphone = json['cellphone'];
+  }
+
+  Debtor.fromDocumentSnapshot(DocumentSnapshot doc) {
+    _name = doc['name'] as String;
+    _city = doc['city'] as String;
+    _email = doc['email'] as String;
+    _cellphone = doc['cellphone'] as String;
   }
 
   String get name => _name;

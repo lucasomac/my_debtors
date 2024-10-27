@@ -8,14 +8,18 @@ class DebtorSqliteRepositoryImpl implements DebtorRepository {
   DebtorSqliteRepositoryImpl(this.helper);
 
   @override
-  Future<String> deleteDebtor(String email) {
-     helper.deleteDebtor(email);
-    return Future.value(email);
+  Future<bool> insertDebtor(Debtor debtor) async {
+    int result = await helper.insertDebtor(debtor).then((onValue) {
+      return onValue;
+    });
+    return Future.value(result != 0);
   }
 
   @override
-  Future<List> getAllDebtors() {
-    return helper.getAllDebtors();
+  Future<List<Debtor>> getAllDebtors() {
+    return helper.getAllDebtors().then((value) {
+      return value.map((e) => Debtor.fromJson(e)).toList();
+    });
   }
 
   @override
@@ -24,13 +28,25 @@ class DebtorSqliteRepositoryImpl implements DebtorRepository {
   }
 
   @override
-  Future<String> insertDebtor(Debtor debtor) {
-    return helper.insertDebtor(debtor);
+  Future<bool> updateDebtor(Debtor debtor) async {
+    int result = await helper.updateDebtor(debtor).then((onValue) {
+      return onValue;
+    });
+    return Future.value(result != 0);
   }
 
   @override
-  Future<String> updateDebtor(Debtor debtor) {
-    helper.updateDebtor(debtor);
-    return Future.value(debtor.email);
+  Future<bool> deleteDebtor(String email) async {
+    int result = await helper.deleteDebtor(email).then((onValue) {
+      return onValue;
+    });
+    return Future.value(result == 1);
+  }
+
+  @override
+  Future<Debtor?> getByField(String fieldToSearch) {
+    return helper.getDebtorByField(fieldToSearch).then((value) {
+      return value != null ? Debtor.fromJson(value) : null;
+    });
   }
 }

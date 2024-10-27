@@ -39,7 +39,7 @@ class DbHelper {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}mydebtors.db";
     var dbMyDebtors = await openDatabase(path,
-        version: 2, onCreate: _createDb, onConfigure: _onConfigure);
+        version: 4, onCreate: _createDb, onConfigure: _onConfigure);
     return dbMyDebtors;
   }
 
@@ -50,7 +50,7 @@ class DbHelper {
         "$columnDebtId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtDatePayment TEXT, $columnDebtTypePayment TEXT,"
         "$columnDebtDescriptionPayment TEXT, $columnDebtValuePayment DOUBLE,"
         "$columnDebtDebtor TEXT, "
-        "FOREIGN KEY ($columnDebtDebtor) REFERENCES $tableDebtor ($columnDebtorCellphone) ON DELETE CASCADE ON UPDATE CASCADE"
+        "FOREIGN KEY ($columnDebtDebtor) REFERENCES $tableDebtor ($columnDebtorEmail) ON DELETE CASCADE ON UPDATE CASCADE"
         ")");
   }
 
@@ -61,16 +61,30 @@ class DbHelper {
     return _db!;
   }
 
-  Future<String> insertDebtor(Debtor debtor) async {
+  Future<int> insertDebtor(Debtor debtor) async {
     Database db = await this.db;
     var result = await db.insert(tableDebtor, debtor.toJson());
-    return Future.value(result.toString());
+    return Future.value(result);
   }
 
   Future<int> insertDebt(Debt debt) async {
     Database db = await this.db;
     var result = await db.insert(tableDebt, debt.toJson());
     return result;
+  }
+
+  Future<Debtor?> getDebtorByField(String fieldToSearch) async {
+    Database db = await this.db;
+    var result = await db.query(tableDebtor,
+        where: "$columnDebtorEmail = $fieldToSearch");
+    return result.isNotEmpty ? Debtor.fromJson(result.first) : null;
+  }
+
+  Future<Debtor?> getDebtByField(Debtor debtor, String fieldToSearch) async {
+    Database db = await this.db;
+    var result =
+        await db.query(tableDebt, where: "$columnDebtId = $fieldToSearch");
+    return result.isNotEmpty ? Debtor.fromJson(result.first) : null;
   }
 
   Future<List> getAllDebtors() async {
@@ -82,8 +96,7 @@ class DbHelper {
 
   Future<List> getAllDebtsByDebtor(String email) async {
     Database db = await this.db;
-    var result =
-        await db.query(tableDebt, where: "$columnDebtDebtor = $email");
+    var result = await db.query(tableDebt, where: "$columnDebtDebtor = $email");
     return result;
   }
 
@@ -118,16 +131,16 @@ class DbHelper {
   Future<int> deleteDebtor(String email) async {
     int result;
     var db = await this.db;
-    result = await db
-        .rawDelete('DELETE FROM $tableDebtor WHERE $columnDebtorEmail = $email');
+    result = await db.rawDelete(
+        'DELETE FROM $tableDebtor WHERE $columnDebtorEmail = "$email"');
     return result;
   }
 
   Future<int> deleteDebt(int id) async {
     int result;
     var db = await this.db;
-    result = await db
-        .rawDelete('DELETE FROM $tableDebt WHERE $columnDebtId = $id');
+    result =
+        await db.rawDelete('DELETE FROM $tableDebt WHERE $columnDebtId = $id');
     return result;
   }
 }
