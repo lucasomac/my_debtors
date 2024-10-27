@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_database/firebase_database.dart';
 
-import '../../domain/model/debtor.dart';
-import '../../domain/repository/debtor_repository.dart';
+import '../../../domain/model/debtor.dart';
+import '../../../domain/repository/debtor_repository.dart';
 
 class DebtorFirebaseRepositoryImpl implements DebtorRepository {
   FirebaseDatabase database;
@@ -55,12 +55,13 @@ class DebtorFirebaseRepositoryImpl implements DebtorRepository {
   }
 
   @override
-  Future<bool> deleteDebtor(String cellphone) {
-    reference.child(cellphone).remove();
-    var result = reference.child(cellphone).get().then((onValue) {
-      return onValue.value == null;
-    });
-    return Future.value(result);
+  Future<bool> deleteDebtor(String cellphone) async {
+    try {
+      await reference.child(cellphone).remove();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override

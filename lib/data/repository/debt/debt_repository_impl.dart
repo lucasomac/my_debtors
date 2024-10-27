@@ -1,6 +1,6 @@
-import '../../domain/model/debt.dart';
-import '../../domain/repository/debt_repository.dart';
-import '../../util/db_helper.dart';
+import '../../../domain/model/debt.dart';
+import '../../../domain/repository/debt_repository.dart';
+import '../../../util/db_helper.dart';
 
 class DebtRepositoryImpl implements DebtRepository {
   DbHelper helper;

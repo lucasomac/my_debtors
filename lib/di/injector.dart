@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:mydebtors/data/repository/debtor_firestore_repository_impl.dart';
-import 'package:mydebtors/data/repository/debtor_sqlite_repository_impl.dart';
-
-import '../data/repository/debt_repository_impl.dart';
-import '../data/repository/debtor_firebase_repository_impl.dart';
+import 'package:mydebtors/data/repository/debtor/debtor_firestore_repository_impl.dart';
+import '../data/repository/debt/debt_repository_impl.dart';
+import '../data/repository/debtor/debtor_firebase_repository_impl.dart';
+import '../data/repository/debtor/debtor_sqlite_repository_impl.dart';
 import '../domain/repository/debt_repository.dart';
 import '../domain/repository/debtor_repository.dart';
 import '../util/db_helper.dart';

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../domain/model/debtor.dart';
-import '../../domain/repository/debtor_repository.dart';
+import '../../../domain/model/debtor.dart';
+import '../../../domain/repository/debtor_repository.dart';
 
 class DebtorFirestoreRepositoryImpl implements DebtorRepository {
   FirebaseFirestore database;

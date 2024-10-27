@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mydebtors/data/repository/debtor_firebase_repository_impl.dart';
+import 'package:mydebtors/data/repository/debtor/debtor_firebase_repository_impl.dart';
 import 'package:mydebtors/domain/model/debt.dart';
 
 import '../../di/injector.dart';
@@ -13,7 +13,7 @@ class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
 
   DebtorRepository repository =
-      Injector.instance.get<DebtorRepository>(nominal: Nominal.SQLITE);
+      Injector.instance.get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();

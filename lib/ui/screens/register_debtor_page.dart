@@ -7,7 +7,7 @@ import '../components/field_entry.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
   DebtorRepository repository = Injector.instance
-      .get<DebtorRepository>(nominal: Nominal.SQLITE);
+      .get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
   Debtor? debtor;
 
   RegisterDebtorPage({this.debtor, super.key});
