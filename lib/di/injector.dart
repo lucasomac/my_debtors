@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:mydebtors/data/repository/debtor/debtor_firestore_repository_impl.dart';
-import '../data/repository/debt/debt_repository_impl.dart';
+import '../data/repository/debt/debt_firebase_repository_impl.dart';
+import '../data/repository/debt/debt_sqlite_repository_impl.dart';
 import '../data/repository/debtor/debtor_firebase_repository_impl.dart';
 import '../data/repository/debtor/debtor_sqlite_repository_impl.dart';
 import '../domain/repository/debt_repository.dart';
@@ -11,6 +12,7 @@ import '../util/db_helper.dart';
 enum Nominal { DEFAULT, SQLITE, FIREBASE_DATABASE, FIREBASE_FIRESTORE }
 
 class Injector {
+  static const Nominal nominalDefault = Nominal.SQLITE;
   static Injector? _instance;
 
   static Injector get instance => _instance ??= Injector._();
@@ -60,13 +62,21 @@ class Injector {
     injector._add<FirebaseDatabase>(FirebaseDatabase.instance);
     injector._add<FirebaseFirestore>(FirebaseFirestore.instance);
     // repositories
-    injector._add<DebtRepository>(DebtRepositoryImpl(injector.get<DbHelper>()));
-    injector._add<DebtorRepository>(
-        DebtorFirebaseRepositoryImpl(injector.get<FirebaseDatabase>()),
-        nominal: Nominal.FIREBASE_DATABASE);
+    //Sqlite
+    injector._add<DebtRepository>(
+        DebtSqliteRepositoryImpl(injector.get<DbHelper>()),
+        nominal: Nominal.SQLITE);
     injector._add<DebtorRepository>(
         DebtorSqliteRepositoryImpl(injector.get<DbHelper>()),
         nominal: Nominal.SQLITE);
+    //Firebase database
+    injector._add<DebtorRepository>(
+        DebtorFirebaseRepositoryImpl(injector.get<FirebaseDatabase>()),
+        nominal: Nominal.FIREBASE_DATABASE);
+    injector._add<DebtRepository>(
+        DebtFirebaseRepositoryImpl(injector.get<FirebaseDatabase>()),
+        nominal: Nominal.FIREBASE_DATABASE);
+    //Firebase firestore
     injector._add<DebtorRepository>(
         DebtorFirestoreRepositoryImpl(injector.get<FirebaseFirestore>()),
         nominal: Nominal.FIREBASE_FIRESTORE);

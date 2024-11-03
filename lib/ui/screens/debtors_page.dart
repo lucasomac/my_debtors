@@ -12,8 +12,8 @@ import 'register_debtor_page.dart';
 class DebtorsPage extends StatefulWidget {
   DebtorsPage({super.key});
 
-  DebtorRepository repository =
-      Injector.instance.get<DebtorRepository>(nominal: Nominal.FIREBASE_DATABASE);
+  DebtorRepository repository = Injector.instance
+      .get<DebtorRepository>(nominal: Injector.nominalDefault);
 
   @override
   State<DebtorsPage> createState() => _DebtorsPageState();

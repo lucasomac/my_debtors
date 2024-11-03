@@ -10,7 +10,8 @@ import '../components/field_entry.dart';
 class RegisterDebtPage extends StatefulWidget {
   Debtor debtor;
   Debt? debt;
-  DebtRepository debtRepository = Injector.instance.get<DebtRepository>();
+  DebtRepository debtRepository =
+      Injector.instance.get<DebtRepository>(nominal: Injector.nominalDefault);
 
   RegisterDebtPage(this.debtor, {this.debt, super.key});
 
@@ -21,9 +22,7 @@ class RegisterDebtPage extends StatefulWidget {
 class _RegisterDebtPageState extends State<RegisterDebtPage> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController dateController = TextEditingController();
-  TextEditingController typeController = TextEditingController();
   TextEditingController valueController = TextEditingController();
-  final GlobalKey<FormState> _newDebtorFormKey = GlobalKey();
 
   DebtType _currentTypeDebt = DebtType.values.first;
 
@@ -33,7 +32,6 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
     if (debt != null) {
       descriptionController.text = debt.description;
       dateController.text = debt.datePayment;
-      typeController.text = debt.typePayment;
       valueController.text = debt.value.toString();
     }
     return Scaffold(
@@ -131,15 +129,16 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
     if (debt != null) {
       debt.description = descriptionController.text;
       debt.datePayment = dateController.text;
-      debt.typePayment = typeController.text;
+      debt.typePayment = _currentTypeDebt.getTypeCode();
       debt.value = double.parse(valueController.text);
 
       var id = widget.debtRepository.updateDebt(debt);
       id.then((value) => debugPrint(value.toString()));
     } else {
-      debt = Debt(null,
+      debt = Debt(
+          id: null,
           datePayment: dateController.text,
-          typePayment: typeController.text,
+          typePayment: _currentTypeDebt.getTypeCode(),
           description: descriptionController.text,
           value: double.parse(valueController.text),
           debtor: widget.debtor.email);

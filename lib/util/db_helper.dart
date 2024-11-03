@@ -39,7 +39,7 @@ class DbHelper {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}mydebtors.db";
     var dbMyDebtors = await openDatabase(path,
-        version: 4, onCreate: _createDb, onConfigure: _onConfigure);
+        version: 5, onCreate: _createDb, onConfigure: _onConfigure);
     return dbMyDebtors;
   }
 
@@ -47,7 +47,7 @@ class DbHelper {
     await db.execute(
         "CREATE TABLE $tableDebtor ($columnDebtorName TEXT, $columnDebtorCity TEXT, $columnDebtorEmail TEXT PRIMARY KEY, $columnDebtorCellphone TEXT);");
     await db.execute("CREATE TABLE $tableDebt ("
-        "$columnDebtId INTEGER PRIMARY KEY AUTOINCREMENT, $columnDebtDatePayment TEXT, $columnDebtTypePayment TEXT,"
+        "$columnDebtId TEXT PRIMARY KEY, $columnDebtDatePayment TEXT, $columnDebtTypePayment TEXT,"
         "$columnDebtDescriptionPayment TEXT, $columnDebtValuePayment DOUBLE,"
         "$columnDebtDebtor TEXT, "
         "FOREIGN KEY ($columnDebtDebtor) REFERENCES $tableDebtor ($columnDebtorEmail) ON DELETE CASCADE ON UPDATE CASCADE"
@@ -96,7 +96,8 @@ class DbHelper {
 
   Future<List> getAllDebtsByDebtor(String email) async {
     Database db = await this.db;
-    var result = await db.query(tableDebt, where: "$columnDebtDebtor = $email");
+    var result = await db.rawQuery(
+        "SELECT * FROM $tableDebt WHERE $columnDebtDebtor = ?", [email]);
     return result;
   }
 
@@ -136,11 +137,11 @@ class DbHelper {
     return result;
   }
 
-  Future<int> deleteDebt(int id) async {
+  Future<int> deleteDebt(String id) async {
     int result;
     var db = await this.db;
-    result =
-        await db.rawDelete('DELETE FROM $tableDebt WHERE $columnDebtId = $id');
+    result = await db
+        .rawDelete("DELETE FROM $tableDebt WHERE $columnDebtId = ?", [id]);
     return result;
   }
 }

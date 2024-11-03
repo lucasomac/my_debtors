@@ -12,9 +12,10 @@ import 'register_debt_page.dart';
 class DebtorPage extends StatefulWidget {
   Debtor debtor;
 
-  DebtorRepository debtorRepository = Injector.instance
-      .get<DebtorRepository>(nominal: Nominal.FIREBASE_FIRESTORE);
-  DebtRepository debtRepository = Injector.instance.get<DebtRepository>();
+  DebtorRepository debtorRepository =
+      Injector.instance.get<DebtorRepository>(nominal: Injector.nominalDefault);
+  DebtRepository debtRepository =
+      Injector.instance.get<DebtRepository>(nominal: Injector.nominalDefault);
 
   DebtorPage({super.key, required this.debtor});
 
@@ -23,6 +24,9 @@ class DebtorPage extends StatefulWidget {
 }
 
 class _DebtorPageState extends State<DebtorPage> {
+  var brazilianCurrency =
+      NumberFormat.currency(locale: "pt_BR", symbol: "R\$", decimalDigits: 2);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,36 +52,33 @@ class _DebtorPageState extends State<DebtorPage> {
             widget.debtRepository.getAllDebtsByDebtorEmail(widget.debtor.email),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
-            var list = future.data!.toList().map((element) {
-              return Debt.fromJson(element);
-            });
-            var credits = list
+            var list = future.data!;
+            double credits = list
                 .where((debt) => debt.typePayment == "C")
                 .map((debt) => debt.value)
-                .reduce((value, debt) => value + debt);
-            var debits = list
+                .fold(0.0, (value, debt) => value + debt);
+            double debits = list
                 .where((debt) => debt.typePayment == "D")
                 .map((debt) => debt.value)
-                .reduce((value, debt) => value + debt);
-            var valueFormated = NumberFormat("###.0#", "pt_BR")
-                .format((credits - debits).toStringAsFixed(2));
-            return Text("O saldo deste devedor é $valueFormated");
+                .fold(0.0, (value, debt) => value + debt);
+            double total = credits - debits;
+            return Text(
+                "O saldo de ${widget.debtor.name} é ${brazilianCurrency.format(total)}");
           } else {
-            return const Text("O saldo deste devedor é R\$ 0,00");
+            return Text(
+                "O saldo deste devedor é ${brazilianCurrency.format(0)}");
           }
         });
   }
 
   _getDebtsFromDatabase() {
-    return FutureBuilder<List>(
+    return FutureBuilder<List<Debt>>(
         future:
             widget.debtRepository.getAllDebtsByDebtorEmail(widget.debtor.email),
         builder: (context, future) {
           if (future.data?.isNotEmpty ?? false) {
-            var list = future.data!.toList().map((element) {
-              return Debt.fromJson(element);
-            });
-            return _buildDebts(list.toList());
+            var list = future.data;
+            return _buildDebts(list!);
           } else {
             return const Center(child: Text("Nao ha dividas registradas!"));
           }
