@@ -46,6 +46,7 @@ dev_dependencies:
   path_provider:
   intl:
   uuid:
+  brasil_fields:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

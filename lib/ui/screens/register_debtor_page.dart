@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import '../../di/injector.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/repository/debtor_repository.dart';
 import '../components/field_entry.dart';
 
 class RegisterDebtorPage extends StatefulWidget {
-  DebtorRepository repository = Injector.instance
-      .get<DebtorRepository>(nominal: Injector.nominalDefault);
+  DebtorRepository repository =
+      Injector.instance.get<DebtorRepository>(nominal: Injector.nominalDefault);
   Debtor? debtor;
 
   RegisterDebtorPage({this.debtor, super.key});
@@ -52,8 +53,23 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
           children: [
             FieldEntry("Nome", nameController, validatorName),
             FieldEntry("Cidade", cityController, validatorCity),
-            FieldEntry("E-mail", emailController, validatorEmail),
-            FieldEntry("Telefone", cellphoneController, validatorCellphone),
+            FieldEntry(
+              "E-mail",
+              emailController,
+              validatorEmail,
+              inputType: TextInputType.emailAddress,
+            ),
+            FieldEntry(
+              "Telefone",
+              cellphoneController,
+              validatorCellphone,
+              inputType: TextInputType.phone,
+              formatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(11),
+                TelefoneInputFormatter()
+              ],
+            ),
           ],
         ),
       ),
@@ -101,7 +117,9 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
       debtor.name = nameController.text;
       debtor.city = cityController.text;
       debtor.email = emailController.text;
-      debtor.cellphone = cellphoneController.text;
+      debtor.cellphone = UtilBrasilFields.obterTelefone(
+          cellphoneController.text,
+          mascara: false);
       var id = widget.repository.updateDebtor(debtor);
       id.then((value) => debugPrint(value.toString()));
     } else {
@@ -109,7 +127,8 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
           name: nameController.text,
           city: cityController.text,
           email: emailController.text,
-          cellphone: cellphoneController.text);
+          cellphone: UtilBrasilFields.obterTelefone(cellphoneController.text,
+              mascara: false));
       var id = widget.repository.insertDebtor(debtor);
       id.then((value) => debugPrint(value.toString()));
     }

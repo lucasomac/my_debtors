@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import '../../di/injector.dart';
 import '../../domain/model/debt.dart';
 import '../../domain/model/debt_type.dart';
 import '../../domain/model/debtor.dart';
 import '../../domain/repository/debt_repository.dart';
+import 'package:intl/intl.dart'; // for date format
 import '../components/field_entry.dart';
 
 class RegisterDebtPage extends StatefulWidget {
@@ -78,6 +80,10 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
             valueController,
             validatorValue,
             inputType: const TextInputType.numberWithOptions(decimal: true),
+            formatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              RealInputFormatter(moeda: true)
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -122,7 +128,8 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
         initialDate: DateTime.now(),
         firstDate: DateTime(2000),
         lastDate: DateTime(2100));
-    setState(() => dateController.text = picked.toString());
+    setState(
+        () => dateController.text = DateFormat('dd-MM-yyyy').format(picked!));
   }
 
   _saveDebtAndGoBack(BuildContext context, Debt? debt) {
@@ -130,7 +137,8 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
       debt.description = descriptionController.text;
       debt.datePayment = dateController.text;
       debt.typePayment = _currentTypeDebt.getTypeCode();
-      debt.value = double.parse(valueController.text);
+      debt.value =
+          UtilBrasilFields.converterMoedaParaDouble(valueController.text);
 
       var id = widget.debtRepository.updateDebt(debt);
       id.then((value) => debugPrint(value.toString()));
@@ -140,7 +148,8 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
           datePayment: dateController.text,
           typePayment: _currentTypeDebt.getTypeCode(),
           description: descriptionController.text,
-          value: double.parse(valueController.text),
+          value:
+              UtilBrasilFields.converterMoedaParaDouble(valueController.text),
           debtor: widget.debtor.email);
 
       var id = widget.debtRepository.insertDebt(debt);
