@@ -25,6 +25,7 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController valueController = TextEditingController();
+  final GlobalKey<FormState> _newDebtFormKey = GlobalKey();
 
   DebtType _currentTypeDebt = DebtType.values.first;
 
@@ -40,77 +41,93 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
       appBar: AppBar(
         title: const Text('Novo lançamento'),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          FieldEntry("Descrição", descriptionController, validatorDescription),
-          InkWell(
-            onTap: () {
-              _selectDate();
-            },
-            child: IgnorePointer(
-              child: FieldEntry("Data", dateController, validatorDescription),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: DropdownButtonFormField<DebtType>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
+      body: SingleChildScrollView(
+        child: Form(
+          key: _newDebtFormKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FieldEntry(
+                  "Descrição", descriptionController, validatorDescription),
+              InkWell(
+                onTap: () {
+                  _selectDate();
+                },
+                child: IgnorePointer(
+                  child:
+                      FieldEntry("Data", dateController, validatorDate),
+                ),
               ),
-              items: DebtType.values
-                  .map(
-                    (debtType) => DropdownMenuItem(
-                      value: debtType,
-                      child: Text(debtType.getName()),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (debtType) {
-                setState(() {
-                  _currentTypeDebt = debtType!;
-                });
-              },
-              value: _currentTypeDebt,
-            ),
-          ),
-          FieldEntry(
-            "Valor",
-            valueController,
-            validatorValue,
-            inputType: const TextInputType.numberWithOptions(decimal: true),
-            formatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              RealInputFormatter(moeda: true)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: DropdownButtonFormField<DebtType>(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                  ),
+                  items: DebtType.values
+                      .map(
+                        (debtType) => DropdownMenuItem(
+                          value: debtType,
+                          child: Text(debtType.getName()),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (debtType) {
+                    setState(() {
+                      _currentTypeDebt = debtType!;
+                    });
+                  },
+                  value: _currentTypeDebt,
+                ),
+              ),
+              FieldEntry(
+                "Valor",
+                valueController,
+                validatorValue,
+                inputType: const TextInputType.numberWithOptions(decimal: true),
+                formatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  RealInputFormatter(moeda: true)
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  child: const Text('SALVAR'),
+                  onPressed: () {
+                    if (_newDebtFormKey.currentState!.validate()) {
+                      _saveDebtAndGoBack(context, debt);
+                    }
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  child: const Text('CANCELA'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              child: const Text('SALVAR'),
-              onPressed: () {
-                _saveDebtAndGoBack(context, debt);
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              child: const Text('CANCELA'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
   String? validatorDescription(String? description) {
     if (description == null || description.isEmpty) {
-      return "O nome não pode estar em branco!";
+      return "A descrição não pode estar em branco!";
+    }
+    return null;
+  }
+
+  String? validatorDate(String? description) {
+    if (description == null || description.isEmpty) {
+      return "A data não pode estar em branco!";
     }
     return null;
   }
@@ -118,6 +135,9 @@ class _RegisterDebtPageState extends State<RegisterDebtPage> {
   String? validatorValue(String? value) {
     if (value == null || value.isEmpty) {
       return "O valor não pode estar vazio!";
+    }
+    if (UtilBrasilFields.converterMoedaParaDouble(value) == 0) {
+      return "O valor não pode ser zero!";
     }
     return null;
   }

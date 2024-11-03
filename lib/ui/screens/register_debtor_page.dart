@@ -47,30 +47,32 @@ class _RegisterDebtorPageState extends State<RegisterDebtorPage> {
               icon: const Icon(Icons.save))
         ],
       ),
-      body: Form(
-        key: _newDebtorFormKey,
-        child: Column(
-          children: [
-            FieldEntry("Nome", nameController, validatorName),
-            FieldEntry("Cidade", cityController, validatorCity),
-            FieldEntry(
-              "E-mail",
-              emailController,
-              validatorEmail,
-              inputType: TextInputType.emailAddress,
-            ),
-            FieldEntry(
-              "Telefone",
-              cellphoneController,
-              validatorCellphone,
-              inputType: TextInputType.phone,
-              formatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(11),
-                TelefoneInputFormatter()
-              ],
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Form(
+          key: _newDebtorFormKey,
+          child: Column(
+            children: [
+              FieldEntry("Nome", nameController, validatorName),
+              FieldEntry("Cidade", cityController, validatorCity),
+              FieldEntry(
+                "E-mail",
+                emailController,
+                validatorEmail,
+                inputType: TextInputType.emailAddress,
+              ),
+              FieldEntry(
+                "Telefone",
+                cellphoneController,
+                validatorCellphone,
+                inputType: TextInputType.phone,
+                formatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(11),
+                  TelefoneInputFormatter()
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
