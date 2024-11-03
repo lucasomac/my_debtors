@@ -192,7 +192,8 @@ class _DebtorPageState extends State<DebtorPage> {
           debt.description,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text("R\$ ${debt.value} - ${debt.datePayment}"),
+        subtitle: Text(
+            "${brazilianCurrency.format(debt.value)} - ${debt.datePayment}"),
         onTap: () {},
       ),
     );

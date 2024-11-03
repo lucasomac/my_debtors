@@ -12,7 +12,7 @@ import '../util/db_helper.dart';
 enum Nominal { DEFAULT, SQLITE, FIREBASE_DATABASE, FIREBASE_FIRESTORE }
 
 class Injector {
-  static const Nominal nominalDefault = Nominal.SQLITE;
+  static const Nominal nominalDefault = Nominal.FIREBASE_DATABASE;
   static Injector? _instance;
 
   static Injector get instance => _instance ??= Injector._();
